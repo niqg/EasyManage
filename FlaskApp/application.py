@@ -16,32 +16,32 @@ app.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
 @application.route("/home")
 
 @application.route("/login")
-def main(GoogleClientID):
+def main():
     #Should do someting if there is already a user logged in to the session
     cur = mysql.get_db().cursor()
     command = []
+    args['gci'] = request.form['GoogleClientID']
     command.append('SELECT DType FROM User ')
-    command.append('WHERE GoogleClientID=')
-    command.append(GoogleClientID)
-    cur.execute(''.join(command))
+    command.append('WHERE GoogleClientID=%s')
+    data = (args['gci'])
+    cur.execute(''.join(command), data)
     fetched = cur.fetchone()[0]
     if(fetched == 'ORG'):
-       loginOrganization(GoogleClientID) 
+       loginOrganization(args['gci']) 
     elif(fetched == 'EMP'):
-        loginEmployee(GoogleClientID)
+        loginEmployee(args['gci'])
     elif(fetched == 'CON'):
-        loginContact(GoogleClientID)
+        loginContact(args['gci'])
     else:
         #ERROR
-    del(fetched)
-    cur.fetchall()
+    cur.close()
 
 def loginOrganization(GoogleClientID):
     cur = mysql.get_db().cursor()
     command = []
     command.append('SELECT User.UserID, OrganizationAccount.OrgID FROM User ')
     command.append('INNER JOIN OrganizationAccount ON User.UserID = OrganizationAccount.UserID ')
-    command.append('WHERE GoogleClientID=(%s)')
+    command.append('WHERE GoogleClientID=%s')
     data = (GoogleClientID)
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()
@@ -52,10 +52,10 @@ def loginOrganization(GoogleClientID):
 def loginEmployee(GoogleClientID):
     cur = mysql.get_db().cursor()
     command = []
-    command.append('SELECT User.UserID, Employee.OrgID FROM ((User ')
-    command.append('INNER JOIN EmployeeUser ON User.UserID = EmployeeUser.UserID) ')
-    command.append('INNER JOIN Employee ON EmployeeUser.EmployeeID = Employee.EmployeeID) ')
-    command.append('WHERE GoogleClientID=(%s)')
+    command.append('SELECT user.user_id, employee.organization_id FROM ((user ')
+    command.append('INNER JOIN employeeUser ON user.user_id = employee_user.user_id) ')
+    command.append('INNER JOIN employee ON employee_user.EmployeeID = Employee.EmployeeID) ')
+    command.append('WHERE GoogleClientID=%s')
     data = (GoogleClientID)
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()
@@ -67,7 +67,7 @@ def loginContact(GoogleClientID):
     cur = mysql.get_db().cursor()
     command = []
     command.append('SELECT UserID FROM User ')
-    command.append('WHERE GoogleClientID=(%s)')
+    command.append('WHERE GoogleClientID=%s')
     data = (GoogleClientID)
     cur.execute(''.join(command), data)
     session['user'] = cur.fetchone()[0]
@@ -85,8 +85,8 @@ def getAllEntries():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
     command = []
-    command.append('SELECT * FROM Entry ')
-    command.append('WHERE OrgID=(%s)')
+    command.append('SELECT title, date_created, description, d_type FROM entry ')
+    command.append('WHERE organization_id=%s')
     data = (session['org'])
     cur.execute(''.join(command), data)
     toReturn = cur.fetchall()
