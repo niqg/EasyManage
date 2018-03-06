@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- New XML document created with EditiX XML Editor (http://www.editix.com) at Sat Feb 10 16:28:46 EST 2018 -->
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- For Google Authentication, our client ID is in here as well. -->
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="1062733567914-iqnpfifpl4bqrih5rr6dhkkctnl13j7e.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <title>EasyManager Powered by Rowan</title>
+
+    <style type="text/css">
+        /* Header #1 "EasyManager" */
+
+        h1 {
+            background-color: gold;
+            color: 804000;
+            font-family: Courier;
+            display: block;
+            text-align: center;
+            line-height: 150%;
+            font-size: 2.45em;
+        }
+
+
+
+
+        /* Full-width input fields */
+
+        input[type=username],
+        input[type=password] {
+            width: 85%;
+            padding: 12px 18px;
+            margin: 10px 20;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        /* Body Parameters */
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: url(facility.jpg) no-repeat;
+            background-size: 100% 100%;
+            margin: 0;
+            height: 100%;
+            overflow: hidden
+        }
+
+        /* Center the image*/
+
+        .imgcontainer {
+            text-align: center;
+            position: relative;
+        }
+
+        /* Login button is in this frame*/
+
+        .loginFrame {
+            padding-bottom: 6px;
+        }
+
+
+        img.axolotl {
+            size: 10%;
+            width: 30%;
+            border-radius: 30%;
+            padding-top: 1%;
+            padding-bottom: 5%;
+        }
+
+
+        /* Stylize all buttons */
+
+        button {
+            background-color: gold;
+            color: 804000;
+            padding: 10px 20px;
+            margin-left: 30%;
+            border: none;
+            cursor: pointer;
+            width: 40%;
+        }
+
+        label {
+            font-family: Courier;
+            display: block;
+            text-align: center;
+            line-height: 100%;
+            font-size: 1.45em;
+        }
+
+
+
+        /* Modal Content/Box - Contains everything in center box */
+
+        .modal-content {
+            background-color: rgba(256, 256, 256, 0.5);
+            margin: 10% auto 15% auto;
+            /* 15% from the top, 15% from the bottom and centered */
+            border: 2px solid #888;
+            width: 30%;
+            /* Could be more or less, depending on screen size */
+        }
+
+        /* Add Zoom Animation */
+
+        .animate {
+            -webkit-animation: animatezoom 0.6s;
+            animation: animatezoom 1.3s
+        }
+
+        @-webkit-keyframes animatezoom {
+            from {
+                -webkit-transform: scale(0)
+            }
+            to {
+                -webkit-transform: scale(1)
+            }
+        }
+
+        @keyframes animatezoom {
+            from {
+                transform: scale(0)
+            }
+            to {
+                transform: scale(1)
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+    <div id="loginModule" class="modal">
+
+        <form class="modal-content animate" action="index.html">
+            <div class="imgcontainer">
+                <h1>EasyManager</h1>
+                <img src="axolotl.jpg" alt="ax" class="axolotl">
+            </div>
+
+            <div class="loginFrame">
+                <button type="submit">Login</button>
+
+            </div>
+        </form>
+    </div>
+<!-- For Google Authentication
+    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    <script>
+      function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName());
+        console.log('Given Name: ' + profile.getGivenName());
+        console.log('Family Name: ' + profile.getFamilyName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+      };
+    </script>
+-->
+
+    
+
+</body>
+
+</html>
