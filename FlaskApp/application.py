@@ -195,3 +195,6 @@ def addNewEntry():
 #@application.route("/account/personnel/<employeeID>/permissions",methods=['GET']) #Should only work if employeeID is an employee user
 
 #@application.route("/account/personnel/<employeeID>/permissions/modify",methods=['PUT'])
+
+if __name__ == '__main__':
+    application.run(host=0.0.0.0, port=5000)
