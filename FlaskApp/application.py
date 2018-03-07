@@ -101,7 +101,7 @@ def addNewEntry():
     args['dType'] = request.form['entryType']
     command.append('INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ')
     command.append('VALUES (%s, %s, %s, %s, %s, %s); ')
-    command.append('SELECT scope_identity()') #I want to make the commands atomic in the future
+    command.append('SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]') #I want to make the commands atomic in the future
     data = (session['user'], session['org'], args['title'], args['date'], args['descp'], args['dType'])
     cur.execute(command, data, True)
     args['entryID'] = cur.fetchone()[0]
