@@ -3,16 +3,16 @@ from flaskext.mysql import MySQL
 
 application = Flask(__name__)
 mysql = MySQL()
-flask_application.config['MYSQL_DATABASE_USER'] = 'root'
-flask_application.config['MYSQL_DATABASE_PASSWORD'] = 'axolotl'
-flask_application.config['MYSQL_DATABASE_DB'] = 'EasyManageDB'
-flask_application.config['MYSQL_DATABASE_HOST'] = 'localhost'
+application.config['MYSQL_DATABASE_USER'] = 'root'
+application.config['MYSQL_DATABASE_PASSWORD'] = 'axolotl'
+application.config['MYSQL_DATABASE_DB'] = 'EasyManage'
+application.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(application)
-app.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
+application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
 
-@application.route("/")
+#@application.route("/")
 
-@application.route("/home")
+#@application.route("/home")
 
 @application.route("/login")
 def main():
@@ -122,76 +122,76 @@ def addNewEntry():
         cur.execute(''.join(command), data)
     cur.close()
 
-@application.route("/entries/search?=<filter>",methods=['GET'])
+#@application.route("/entries/search?=<filter>",methods=['GET'])
 
-@application.route("/entries/work",methods=['GET'])
+#@application.route("/entries/work",methods=['GET'])
 
-@application.route("/entries/work/search?=<filter>",methods=['GET'])
+#@application.route("/entries/work/search?=<filter>",methods=['GET'])
 
-@application.route("/entries/purchase",methods=['GET'])
+#@application.route("/entries/purchase",methods=['GET'])
 
-@application.route("/entries/purchase/search?=<filter>",methods=['GET'])
+#@application.route("/entries/purchase/search?=<filter>",methods=['GET'])
 
-@application.route("/entries/<entryID>",methods=['GET'])
+#@application.route("/entries/<entryID>",methods=['GET'])
 
-@application.route("/entries/<entryID>/modify",methods=['PUT'])
+#@application.route("/entries/<entryID>/modify",methods=['PUT'])
 
-@application.route("/entries/<entryID>/remove",methods=['DELETE'])
+#@application.route("/entries/<entryID>/remove",methods=['DELETE'])
 
-@application.route("/contacts",methods=['GET'])
+#@application.route("/contacts",methods=['GET'])
 
-@application.route("/contacts/new",methods=['POST'])
+#@application.route("/contacts/new",methods=['POST'])
 
-@application.route("/contacts/search?=<filter>",methods=['GET'])
+#@application.route("/contacts/search?=<filter>",methods=['GET'])
 
-@application.route("/contacts/supplier",methods=['GET'])
+#@application.route("/contacts/supplier",methods=['GET'])
 
-@application.route("/contacts/supplier/search?=<filter>",methods=['GET'])
+#@application.route("/contacts/supplier/search?=<filter>",methods=['GET'])
 
-@application.route("/contacts/contractor",methods=['GET'])
+#@application.route("/contacts/contractor",methods=['GET'])
 
-@application.route("/contacts/contractor/search?=<filter>",methods=['GET'])
+#@application.route("/contacts/contractor/search?=<filter>",methods=['GET'])
 
-@application.route("/contacts/<contactID>",methods=['GET'])
+#@application.route("/contacts/<contactID>",methods=['GET'])
 
-@application.route("/contacts/<contactID>/modify",methods=['PUT'])
+#@application.route("/contacts/<contactID>/modify",methods=['PUT'])
 
-@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
+#@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
 
-@application.route("/contacts/<contactID>/personnel",methods=['GET']) #Should only work if contactID is a company
+#@application.route("/contacts/<contactID>/personnel",methods=['GET']) #Should only work if contactID is a company
 
-@application.route("/contacts/<contactID>/personnel/search?=<filter>",methods=['GET'])
+#@application.route("/contacts/<contactID>/personnel/search?=<filter>",methods=['GET'])
 
-@application.route("/about")
+#@application.route("/about")
 
-@application.route("/about/axolDev")
+#@application.route("/about/axolDev")
 
-@application.route("/about/ezManage")
+#@application.route("/about/ezManage")
 
-@application.route("/help",methods=['GET'])
+#@application.route("/help",methods=['GET'])
 
-@application.route("/help/search?=<filter>",methods=['GET'])
+#@application.route("/help/search?=<filter>",methods=['GET'])
 
-@application.route("/help/<tutorialID>",methods=['GET'])
+#@application.route("/help/<tutorialID>",methods=['GET'])
 
-@application.route("/account",methods=['GET'])
+#@application.route("/account",methods=['GET'])
 
-@application.route("/account/settings",mentods=['GET'])
+#@application.route("/account/settings",mentods=['GET'])
 
-@application.route("/account/settings/modify",methods=['PUT'])
+#@application.route("/account/settings/modify",methods=['PUT'])
 
-@application.route("/account/personnel",methods=['GET']) #Should only work for organization accounts
+#@application.route("/account/personnel",methods=['GET']) #Should only work for organization accounts
 
-@application.route("/account/personnel/new",methods=['POST'])
+#@application.route("/account/personnel/new",methods=['POST'])
 
-@application.route("/account/personnel/search?=<filter>",methods=['GET'])
+#@application.route("/account/personnel/search?=<filter>",methods=['GET'])
 
-@application.route("/account/personnel/<employeeID>",methods=['GET'])
+#@application.route("/account/personnel/<employeeID>",methods=['GET'])
 
-@application.route("/account/personnel/<employeeID>/modify",methods=['PUT'])
+#@application.route("/account/personnel/<employeeID>/modify",methods=['PUT'])
 
-@application.route("/account/personnel/<employeeID>/remove",methods=['DELETE'])
+#@application.route("/account/personnel/<employeeID>/remove",methods=['DELETE'])
 
-@application.route("/account/personnel/<employeeID>/permissions",methods=['GET']) #Should only work if employeeID is an employee user
+#@application.route("/account/personnel/<employeeID>/permissions",methods=['GET']) #Should only work if employeeID is an employee user
 
-@application.route("/account/personnel/<employeeID>/permissions/modify",methods=['PUT'])
+#@application.route("/account/personnel/<employeeID>/permissions/modify",methods=['PUT'])
