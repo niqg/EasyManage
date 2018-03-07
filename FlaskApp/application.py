@@ -1,13 +1,12 @@
 from flask import Flask, json, jsonify, request, session
 from flaskext.mysql import MySQL
-import ConfigParser
 
 application = Flask(__name__)
 mysql = MySQL()
-flask_application.config['MYSQL_DATABASE_USER'] = config.get('config','username')
-flask_application.config['MYSQL_DATABASE_PASSWORD'] = config.get('config','password')
-flask_application.config['MYSQL_DATABASE_DB'] = config.get('config','database')
-flask_application.config['MYSQL_DATABASE_HOST'] = config.get('config','hostname')
+flask_application.config['MYSQL_DATABASE_USER'] = 'root'
+flask_application.config['MYSQL_DATABASE_PASSWORD'] = 'axolotl'
+flask_application.config['MYSQL_DATABASE_DB'] = 'EasyManageDB'
+flask_application.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(application)
 app.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
 
@@ -21,8 +20,8 @@ def main():
     cur = mysql.get_db().cursor()
     command = []
     args['gci'] = request.form['GoogleClientID']
-    command.append('SELECT DType FROM User ')
-    command.append('WHERE GoogleClientID=%s')
+    command.append('SELECT d_type FROM user ')
+    command.append('WHERE google_client_id=%s')
     data = (args['gci'])
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()[0]
@@ -32,16 +31,14 @@ def main():
         loginEmployee(args['gci'])
     elif(fetched == 'CON'):
         loginContact(args['gci'])
-    else:
-        #ERROR
     cur.close()
 
 def loginOrganization(GoogleClientID):
     cur = mysql.get_db().cursor()
     command = []
-    command.append('SELECT User.UserID, OrganizationAccount.OrgID FROM User ')
-    command.append('INNER JOIN OrganizationAccount ON User.UserID = OrganizationAccount.UserID ')
-    command.append('WHERE GoogleClientID=%s')
+    command.append('SELECT user.user_id, organization.organization_id FROM user ')
+    command.append('INNER JOIN organization ON user.user_id = organization.user_id ')
+    command.append('WHERE google_client_id=%s')
     data = (GoogleClientID)
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()
@@ -53,9 +50,9 @@ def loginEmployee(GoogleClientID):
     cur = mysql.get_db().cursor()
     command = []
     command.append('SELECT user.user_id, employee.organization_id FROM ((user ')
-    command.append('INNER JOIN employeeUser ON user.user_id = employee_user.user_id) ')
-    command.append('INNER JOIN employee ON employee_user.EmployeeID = Employee.EmployeeID) ')
-    command.append('WHERE GoogleClientID=%s')
+    command.append('INNER JOIN employee_user ON user.user_id = employee_user.user_id) ')
+    command.append('INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ')
+    command.append('WHERE google_client_id=%s')
     data = (GoogleClientID)
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()
@@ -66,8 +63,8 @@ def loginEmployee(GoogleClientID):
 def loginContact(GoogleClientID):
     cur = mysql.get_db().cursor()
     command = []
-    command.append('SELECT UserID FROM User ')
-    command.append('WHERE GoogleClientID=%s')
+    command.append('SELECT user_id FROM user ')
+    command.append('WHERE google_client_id=%s')
     data = (GoogleClientID)
     cur.execute(''.join(command), data)
     session['user'] = cur.fetchone()[0]
@@ -102,7 +99,7 @@ def addNewEntry():
     args['date'] = request.form['date']
     args['descp'] = request.form['description']
     args['dType'] = request.form['entryType']
-    command.append('INSERT INTO Entry (CreatedByEmployeeID, OrgID, Title, DateCreated, Description, DType) ')
+    command.append('INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ')
     command.append('VALUES (%s, %s, %s, %s, %s, %s); ')
     command.append('SELECT scope_identity()') #I want to make the commands atomic in the future
     data = (session['user'], session['org'], args['title'], args['date'], args['descp'], args['dType'])
@@ -112,15 +109,15 @@ def addNewEntry():
         command = []
         args['status'] = request.form['status']
         args['compDate'] = request.form['completionDate']
-        command.append('INSERT INTO WorkOrder (EntryID, Status, CompletionDate) ')
-        command.append('Values (%s, %s, %s)')
+        command.append('INSERT INTO work_order (entry_id, status, completion_date) ')
+        command.append('VALUES (%s, %s, %s)')
         data = (args['entryID'], args['status'], args['compDate'])
         cur.execute(''.join(command), data)
     if(args['dType'] == 'PRC'):
         command = []
         args['status'] = request.form['status']
-        command.append('INSERT INTO WorkOrder (EntryID, Status) ')
-        command.append('Values (%s, %s)')
+        command.append('INSERT INTO purchase_order (entry_id, status) ')
+        command.append('VAlUES (%s, %s)')
         data = (args['entryID'], args['status'])
         cur.execute(''.join(command), data)
     cur.close()
