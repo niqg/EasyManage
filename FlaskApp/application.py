@@ -38,6 +38,8 @@ def loginOrganization(GoogleClientID):
     command = []
     command.append('SELECT user.user_id, organization.organization_id FROM user ')
     command.append('INNER JOIN organization ON user.user_id = organization.user_id ')
+    #equivalent statements
+    #command.append('JOIN organization ON (user.user_id = organization.user_id) ')
     command.append('WHERE google_client_id=%s')
     data = (GoogleClientID)
     cur.execute(''.join(command), data)
@@ -50,6 +52,9 @@ def loginEmployee(GoogleClientID):
     cur = mysql.get_db().cursor()
     command = []
     command.append('SELECT user.user_id, employee.organization_id FROM ((user ')
+    #equivalent to below statement
+    #command.append('JOIN employee_user ON (user.user_id = employee_user.user_id)) ')
+    #command.append('JOIN employee ON (employee_user.employee_id = employee.employee_id)) ')
     command.append('INNER JOIN employee_user ON user.user_id = employee_user.user_id) ')
     command.append('INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ')
     command.append('WHERE google_client_id=%s')
