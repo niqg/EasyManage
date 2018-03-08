@@ -25,13 +25,13 @@ def main():
     data = (args['gci'])
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()[0]
+    cur.close()
     if(fetched == 'ORG'):
        loginOrganization(args['gci']) 
     elif(fetched == 'EMP'):
         loginEmployee(args['gci'])
     elif(fetched == 'CON'):
         loginContact(args['gci'])
-    cur.close()
 
 def loginOrganization(GoogleClientID):
     cur = mysql.get_db().cursor()
