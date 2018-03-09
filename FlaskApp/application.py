@@ -80,18 +80,20 @@ def addNewEntry():
     cur = mysql.get_db().cursor()
     command = []
     command.append('INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ')
-    command.append('VALUES (%s, %s, %s, %s, %s, %s); ')
-    command.append('SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]') #I want to make the commands atomic in the future
+    command.append('VALUES (%s, %s, %s, %s, %s, %s)')
     data = (session['user'], session['org'], request.form['title'], request.form['date'], request.form['description'], request.form['entryType'])
-    cur.execute(''.join(command), data, True)
+    cur.execute(''.join(command), data)
+    command = []
+    command.append('SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]')
+    cur.execute(''.join(command))
     entryID = cur.fetchone()[0]
-    if(args['dType'] == 'WRK'):
+    if(entryID == 'WRK'):
         command = []
         command.append('INSERT INTO work_order (entry_id, status, completion_date) ')
         command.append('VALUES (%s, %s, %s)')
         data = (entryID, request.form['status'], request.form['completionDate'])
         cur.execute(''.join(command), data)
-    if(args['dType'] == 'PRC'):
+    if(entryID == 'PRC'):
         command = []
         command.append('INSERT INTO purchase_order (entry_id, status) ')
         command.append('VALUES (%s, %s)')
