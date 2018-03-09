@@ -8,10 +8,8 @@ application.config['MYSQL_DATABASE_PASSWORD'] = 'axolotl'
 application.config['MYSQL_DATABASE_DB'] = 'EasyManage'
 application.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(application)
-application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
 
 #@application.route("/")
-
 #@application.route("/home")
 
 @application.route("/login")
@@ -176,4 +174,5 @@ def addNewEntry():
 #@application.route("/account/personnel/<employeeID>/permissions/modify",methods=['PUT'])
 
 if __name__ == '__main__':
+    application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
     application.run(host='0.0.0.0', port=5000)
