@@ -15,66 +15,46 @@ application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
 #@application.route("/home")
 
 @application.route("/login")
-def main():
+def login():
     #Should do someting if there is already a user logged in to the session
     cur = mysql.get_db().cursor()
     command = []
-    args = {}
-    args['gci'] = request.form['GoogleClientID']
     command.append('SELECT d_type FROM user ')
     command.append('WHERE google_client_id=%s')
-    data = (args['gci'])
+    data = (request.form['GoogleClientID'],)
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()[0]
-    cur.close()
     if(fetched == 'ORG'):
-       loginOrganization(args['gci']) 
+        command = []
+        command.append('SELECT user.user_id, organization.organization_id FROM user ')
+        command.append('INNER JOIN organization ON user.user_id = organization.user_id ')
+        #equivalent statements
+        #command.append('JOIN organization ON (user.user_id = organization.user_id) ')
+        command.append('WHERE google_client_id=%s')
+        cur.execute(''.join(command), data)
+        fetched = cur.fetchone()
+        session['user'] = fetched[0]
+        session['org'] = fetched[1]
     elif(fetched == 'EMP'):
-        loginEmployee(args['gci'])
+        command = []
+        command.append('SELECT user.user_id, employee.organization_id FROM ((user ')
+        #equivalent to below statement
+        #command.append('JOIN employee_user ON (user.user_id = employee_user.user_id)) ')
+        #command.append('JOIN employee ON (employee_user.employee_id = employee.employee_id)) ')
+        command.append('INNER JOIN employee_user ON user.user_id = employee_user.user_id) ')
+        command.append('INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ')
+        command.append('WHERE google_client_id=%s')
+        cur.execute(''.join(command), data)
+        fetched = cur.fetchone()
+        session['user'] = fetched[0]
+        session['org'] = fetched[1]
     elif(fetched == 'CON'):
-        loginContact(args['gci'])
-
-def loginOrganization(GoogleClientID):
-    cur = mysql.get_db().cursor()
-    command = []
-    command.append('SELECT user.user_id, organization.organization_id FROM user ')
-    command.append('INNER JOIN organization ON user.user_id = organization.user_id ')
-    #equivalent statements
-    #command.append('JOIN organization ON (user.user_id = organization.user_id) ')
-    command.append('WHERE google_client_id=%s')
-    data = [GoogleClientID]
-    cur.execute(''.join(command), data)
-    fetched = cur.fetchone()
-    session['user'] = fetched[0]
-    session['org'] = fetched[1]
-    cur.close()
-
-def loginEmployee(GoogleClientID):
-    cur = mysql.get_db().cursor()
-    command = []
-    command.append('SELECT user.user_id, employee.organization_id FROM ((user ')
-    #equivalent to below statement
-    #command.append('JOIN employee_user ON (user.user_id = employee_user.user_id)) ')
-    #command.append('JOIN employee ON (employee_user.employee_id = employee.employee_id)) ')
-    command.append('INNER JOIN employee_user ON user.user_id = employee_user.user_id) ')
-    command.append('INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ')
-    command.append('WHERE google_client_id=%s')
-    data = [GoogleClientID]
-    cur.execute(''.join(command), data)
-    fetched = cur.fetchone()
-    session['user'] = fetched[0]
-    session['org'] = fetched[1]
-    cur.close()
-
-def loginContact(GoogleClientID):
-    cur = mysql.get_db().cursor()
-    command = []
-    command.append('SELECT user_id FROM user ')
-    command.append('WHERE google_client_id=%s')
-    data = [GoogleClientID]
-    cur.execute(''.join(command), data)
-    session['user'] = cur.fetchone()[0]
-    session['org'] = None
+        command = []
+        command.append('SELECT user_id FROM user ')
+        command.append('WHERE google_client_id=%s')
+        cur.execute(''.join(command), data)
+        session['user'] = cur.fetchone()[0]
+        session['org'] = None
     cur.close()
 
 @application.route("/logout")
@@ -86,11 +66,11 @@ def logout():
 @application.route("/entries",methods=['GET'])
 def getAllEntries():
     #If not logged in or not an employee return some error
-    cur = mysql.get_db().cursor()
+    cur = mysql.get_db().cursor() 
     command = []
     command.append('SELECT title, date_created, description, d_type FROM entry ')
     command.append('WHERE organization_id=%s')
-    data = [session['org']]
+    data = (session['org'],)
     cur.execute(''.join(command), data)
     toReturn = cur.fetchall()
     cur.close()
@@ -101,31 +81,23 @@ def addNewEntry():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
     command = []
-    args = {}
-    args['title'] = request.form['title']
-    args['date'] = request.form['date']
-    args['descp'] = request.form['description']
-    args['dType'] = request.form['entryType']
     command.append('INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ')
     command.append('VALUES (%s, %s, %s, %s, %s, %s); ')
     command.append('SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]') #I want to make the commands atomic in the future
-    data = [session['user'], session['org'], args['title'], args['date'], args['descp'], args['dType']]
+    data = (session['user'], session['org'], request.form['title'], request.form['date'], request.form['description'], request.form['entryType'])
     cur.execute(''.join(command), data, True)
-    args['entryID'] = cur.fetchone()[0]
+    entryID = cur.fetchone()[0]
     if(args['dType'] == 'WRK'):
         command = []
-        args['status'] = request.form['status']
-        args['compDate'] = request.form['completionDate']
         command.append('INSERT INTO work_order (entry_id, status, completion_date) ')
         command.append('VALUES (%s, %s, %s)')
-        data = [args['entryID'], args['status'], args['compDate']]
+        data = (entryID, request.form['status'], request.form['completionDate'])
         cur.execute(''.join(command), data)
     if(args['dType'] == 'PRC'):
         command = []
-        args['status'] = request.form['status']
         command.append('INSERT INTO purchase_order (entry_id, status) ')
-        command.append('VAlUES (%s, %s)')
-        data = [args['entryID'], args['status']]
+        command.append('VALUES (%s, %s)')
+        data = (entryID, request.form['status'])
         cur.execute(''.join(command), data)
     cur.close()
 
