@@ -19,6 +19,7 @@ def main():
     #Should do someting if there is already a user logged in to the session
     cur = mysql.get_db().cursor()
     command = []
+    args = {}
     args['gci'] = request.form['GoogleClientID']
     command.append('SELECT d_type FROM user ')
     command.append('WHERE google_client_id=%s')
@@ -41,7 +42,7 @@ def loginOrganization(GoogleClientID):
     #equivalent statements
     #command.append('JOIN organization ON (user.user_id = organization.user_id) ')
     command.append('WHERE google_client_id=%s')
-    data = (GoogleClientID)
+    data = [GoogleClientID]
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()
     session['user'] = fetched[0]
@@ -58,7 +59,7 @@ def loginEmployee(GoogleClientID):
     command.append('INNER JOIN employee_user ON user.user_id = employee_user.user_id) ')
     command.append('INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ')
     command.append('WHERE google_client_id=%s')
-    data = (GoogleClientID)
+    data = [GoogleClientID]
     cur.execute(''.join(command), data)
     fetched = cur.fetchone()
     session['user'] = fetched[0]
@@ -70,7 +71,7 @@ def loginContact(GoogleClientID):
     command = []
     command.append('SELECT user_id FROM user ')
     command.append('WHERE google_client_id=%s')
-    data = (GoogleClientID)
+    data = [GoogleClientID]
     cur.execute(''.join(command), data)
     session['user'] = cur.fetchone()[0]
     session['org'] = None
@@ -89,7 +90,7 @@ def getAllEntries():
     command = []
     command.append('SELECT title, date_created, description, d_type FROM entry ')
     command.append('WHERE organization_id=%s')
-    data = (session['org'])
+    data = [session['org']]
     cur.execute(''.join(command), data)
     toReturn = cur.fetchall()
     cur.close()
@@ -100,6 +101,7 @@ def addNewEntry():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
     command = []
+    args = {}
     args['title'] = request.form['title']
     args['date'] = request.form['date']
     args['descp'] = request.form['description']
@@ -107,8 +109,8 @@ def addNewEntry():
     command.append('INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ')
     command.append('VALUES (%s, %s, %s, %s, %s, %s); ')
     command.append('SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]') #I want to make the commands atomic in the future
-    data = (session['user'], session['org'], args['title'], args['date'], args['descp'], args['dType'])
-    cur.execute(command, data, True)
+    data = [session['user'], session['org'], args['title'], args['date'], args['descp'], args['dType']]
+    cur.execute(''.join(command), data, True)
     args['entryID'] = cur.fetchone()[0]
     if(args['dType'] == 'WRK'):
         command = []
@@ -116,14 +118,14 @@ def addNewEntry():
         args['compDate'] = request.form['completionDate']
         command.append('INSERT INTO work_order (entry_id, status, completion_date) ')
         command.append('VALUES (%s, %s, %s)')
-        data = (args['entryID'], args['status'], args['compDate'])
+        data = [args['entryID'], args['status'], args['compDate']]
         cur.execute(''.join(command), data)
     if(args['dType'] == 'PRC'):
         command = []
         args['status'] = request.form['status']
         command.append('INSERT INTO purchase_order (entry_id, status) ')
         command.append('VAlUES (%s, %s)')
-        data = (args['entryID'], args['status'])
+        data = [args['entryID'], args['status']]
         cur.execute(''.join(command), data)
     cur.close()
 
