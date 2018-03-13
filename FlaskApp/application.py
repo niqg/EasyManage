@@ -70,10 +70,13 @@ def getAllEntries():
     command = []
     command.append("SELECT title, date_created, description, d_type FROM entry ")
     command.append("WHERE organization_id=%s" % data)
+    filter = request.args.get('filter', None)
+    if filter != None:
+        command.append(" AND title LIKE '%%s%'" % (filter,))
     cur.execute(''.join(command))
     toReturn = cur.fetchall()
     cur.close()
-    return jsonify(result=toReturn)
+    return jsonify(result=data)
 
 @application.route("/entries/new",methods=['POST'])
 def addNewEntry():
@@ -105,15 +108,37 @@ def addNewEntry():
     cur.close()
     return jsonify(result=[])
 
-#@application.route("/entries/search?=<filter>",methods=['GET'])
+@application.route("/entries/work",methods=['GET'])
+def getAllWorkOrders():
+    cur = mysql.get_db().cursor()
+    data = (session.get('org'),)
+    command = []
+    command.append("SELECT * FROM entry ")
+    command.append("FULL OUTER JOIN work_order ON entry.entry_id = work_order.entry_id ")
+    command.append("WHERE entry.organization_id=%s AND entry.dType='WRK'" % data)
+    filter = request.args.get('filter', None)
+    if filter != None:
+        command.append(" AND entry.title LIKE '%%s%'" % (filter,))
+    cur.execute(''.join(command))
+    data = cur.fetchall()
+    cur.close()
+    return jsonify(result=data)
 
-#@application.route("/entries/work",methods=['GET'])
-
-#@application.route("/entries/work/search?=<filter>",methods=['GET'])
-
-#@application.route("/entries/purchase",methods=['GET'])
-
-#@application.route("/entries/purchase/search?=<filter>",methods=['GET'])
+@application.route("/entries/purchase",methods=['GET'])
+def getAllPurchaseOrders():
+    cur = mysql.get_db().cursor()
+    data = (session.get('org'),)
+    command = []
+    command.append("SELECT * FROM entry ")
+    command.append("FULL OUTER JOIN purchase_order ON entry.entry_id = purchase_order.entry_id ")
+    command.append("WHERE entry.organization_id=%s AND entry.dType='PRC'" % data)
+    filter = request.args.get('filter', None)
+    if filter != None:
+        command.append(" AND entry.title LIKE '%%s%'" % (filter,))
+    cur.execute(''.join(command))
+    data = cur.fetchall()
+    cur.close()
+    return jsonify(result=data)
 
 #@application.route("/entries/<entryID>",methods=['GET'])
 
