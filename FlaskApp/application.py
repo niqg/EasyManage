@@ -79,7 +79,7 @@ def addNewEntry():
     command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
     cur.execute(''.join(command))
     command = []
-    command.append("SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]")
+    command.append("SELECT @@IDENTITY")
     cur.execute(''.join(command))
     entryID = cur.fetchone()[0]
     if(entryID == 'WRK'):
