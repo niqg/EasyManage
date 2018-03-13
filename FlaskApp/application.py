@@ -16,41 +16,36 @@ mysql.init_app(application)
 def login():
     #Should do someting if there is already a user logged in to the session
     cur = mysql.get_db().cursor()
+    data = (request.args.get('GoogleClientID'),)
     command = []
-    command.append('SELECT d_type FROM user ')
-    command.append('WHERE google_client_id=%s')
-    data = (request.form['GoogleClientID'],)
-    cur.execute(''.join(command), data)
+    command.append("SELECT d_type FROM user ")
+    command.append("WHERE google_client_id='%s'" % data)
+    cur.execute(''.join(command))
     fetched = cur.fetchone()[0]
     if(fetched == 'ORG'):
         command = []
-        command.append('SELECT user.user_id, organization.organization_id FROM user ')
-        command.append('INNER JOIN organization ON user.user_id = organization.user_id ')
-        #equivalent statements
-        #command.append('JOIN organization ON (user.user_id = organization.user_id) ')
-        command.append('WHERE google_client_id=%s')
-        cur.execute(''.join(command), data)
+        command.append("SELECT user.user_id, organization.organization_id FROM user ")
+        command.append("INNER JOIN organization ON user.user_id = organization.user_id ")
+        command.append("WHERE google_client_id='%s'" % data)
+        cur.execute(''.join(command))
         fetched = cur.fetchone()
         session['user'] = fetched[0]
         session['org'] = fetched[1]
     elif(fetched == 'EMP'):
         command = []
-        command.append('SELECT user.user_id, employee.organization_id FROM ((user ')
-        #equivalent to below statement
-        #command.append('JOIN employee_user ON (user.user_id = employee_user.user_id)) ')
-        #command.append('JOIN employee ON (employee_user.employee_id = employee.employee_id)) ')
-        command.append('INNER JOIN employee_user ON user.user_id = employee_user.user_id) ')
-        command.append('INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ')
-        command.append('WHERE google_client_id=%s')
-        cur.execute(''.join(command), data)
+        command.append("SELECT user.user_id, employee.organization_id FROM ((user ")
+        command.append("INNER JOIN employee_user ON user.user_id = employee_user.user_id) ")
+        command.append("INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ")
+        command.append("WHERE google_client_id='%s'" % data)
+        cur.execute(''.join(command))
         fetched = cur.fetchone()
         session['user'] = fetched[0]
         session['org'] = fetched[1]
     elif(fetched == 'CON'):
         command = []
-        command.append('SELECT user_id FROM user ')
-        command.append('WHERE google_client_id=%s')
-        cur.execute(''.join(command), data)
+        command.append("SELECT user_id FROM user ")
+        command.append("WHERE google_client_id='%s'" % data)
+        cur.execute(''.join(command))
         session['user'] = cur.fetchone()[0]
         session['org'] = None
     cur.close()
@@ -64,12 +59,12 @@ def logout():
 @application.route("/entries",methods=['GET'])
 def getAllEntries():
     #If not logged in or not an employee return some error
-    cur = mysql.get_db().cursor() 
-    command = []
-    command.append('SELECT title, date_created, description, d_type FROM entry ')
-    command.append('WHERE organization_id=%s')
+    cur = mysql.get_db().cursor()
     data = (session['org'],)
-    cur.execute(''.join(command), data)
+    command = []
+    command.append("SELECT title, date_created, description, d_type FROM entry ")
+    command.append("WHERE organization_id=%s" % data)
+    cur.execute(''.join(command))
     toReturn = cur.fetchall()
     cur.close()
     return jsonify(result=toReturn)
@@ -78,27 +73,27 @@ def getAllEntries():
 def addNewEntry():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
+    data = (session['user'], session['org'], request.args.get('Title'), request.args.get('Date'), request.args.get('Description'), request.args.get('EntryType'))
     command = []
-    command.append('INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ')
-    command.append('VALUES (%s, %s, %s, %s, %s, %s)')
-    data = (session['user'], session['org'], request.form['title'], request.form['date'], request.form['description'], request.form['entryType'])
-    cur.execute(''.join(command), data)
+    command.append("INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ")
+    command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
+    cur.execute(''.join(command))
     command = []
-    command.append('SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]')
+    command.append("SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY]")
     cur.execute(''.join(command))
     entryID = cur.fetchone()[0]
     if(entryID == 'WRK'):
+        data = (entryID, request.args.get('Status'), request.args.get('CompletionDate'))
         command = []
-        command.append('INSERT INTO work_order (entry_id, status, completion_date) ')
-        command.append('VALUES (%s, %s, %s)')
-        data = (entryID, request.form['status'], request.form['completionDate'])
-        cur.execute(''.join(command), data)
+        command.append("INSERT INTO work_order (entry_id, status, completion_date) ")
+        command.append("VALUES (%s, '%s', '%s')" % data)
+        cur.execute(''.join(command))
     if(entryID == 'PRC'):
+        data = (entryID, request.args.get('Status'))
         command = []
-        command.append('INSERT INTO purchase_order (entry_id, status) ')
-        command.append('VALUES (%s, %s)')
-        data = (entryID, request.form['status'])
-        cur.execute(''.join(command), data)
+        command.append("INSERT INTO purchase_order (entry_id, status) ")
+        command.append("VALUES (%s, '%s')" % data)
+        cur.execute(''.join(command))
     cur.close()
 
 #@application.route("/entries/search?=<filter>",methods=['GET'])
