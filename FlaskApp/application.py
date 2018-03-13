@@ -94,6 +94,7 @@ def addNewEntry():
         command.append("INSERT INTO purchase_order (entry_id, status) ")
         command.append("VALUES (%s, '%s')" % data)
         cur.execute(''.join(command))
+    mysql.get_db().commit()
     cur.close()
 
 #@application.route("/entries/search?=<filter>",methods=['GET'])
