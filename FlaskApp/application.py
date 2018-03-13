@@ -72,7 +72,7 @@ def getAllEntries():
     command.append("WHERE organization_id=%s" % data)
     filter = request.args.get('filter', None)
     if filter != None:
-        command.append(" AND title LIKE '%%s%'" % (filter,))
+        command.append(" AND title LIKE '%%%s%%'" % (filter,))
     cur.execute(''.join(command))
     toReturn = cur.fetchall()
     cur.close()
@@ -101,7 +101,7 @@ def addNewEntry():
     if(entryType == 'PRC'):
         data = (entryID, request.args.get('status'), request.args.get('purchase_ordercol'))
         command = []
-        command.append("INSERT INTO purchase_order (entry_id, status) ")
+        command.append("INSERT INTO purchase_order (entry_id, status, purchase_ordercol) ")
         command.append("VALUES (%s, '%s', '%s')" % data)
         cur.execute(''.join(command))
     mysql.get_db().commit()
@@ -118,7 +118,7 @@ def getAllWorkOrders():
     command.append("WHERE entry.organization_id=%s AND entry.dType='WRK'" % data)
     filter = request.args.get('filter', None)
     if filter != None:
-        command.append(" AND entry.title LIKE '%%s%'" % (filter,))
+        command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
     cur.execute(''.join(command))
     data = cur.fetchall()
     cur.close()
@@ -134,7 +134,7 @@ def getAllPurchaseOrders():
     command.append("WHERE entry.organization_id=%s AND entry.dType='PRC'" % data)
     filter = request.args.get('filter', None)
     if filter != None:
-        command.append(" AND entry.title LIKE '%%s%'" % (filter,))
+        command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
     cur.execute(''.join(command))
     data = cur.fetchall()
     cur.close()
