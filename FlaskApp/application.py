@@ -16,7 +16,7 @@ mysql.init_app(application)
 def login():
     #Should do someting if there is already a user logged in to the session
     cur = mysql.get_db().cursor()
-    data = (request.args.get('GoogleClientID'),)
+    data = (request.args.get('google_client_id'),)
     command = []
     command.append("SELECT d_type FROM user ")
     command.append("WHERE google_client_id='%s'" % data)
@@ -73,7 +73,7 @@ def getAllEntries():
 def addNewEntry():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
-    data = (session['user'], session['org'], request.args.get('Title'), request.args.get('Date'), request.args.get('Description'), request.args.get('EntryType'))
+    data = (session['user'], session['org'], request.args.get('title'), request.args.get('date_created'), request.args.get('description'), request.args.get('entry_t ype'))
     command = []
     command.append("INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ")
     command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
@@ -83,13 +83,13 @@ def addNewEntry():
     cur.execute(''.join(command))
     entryID = cur.fetchone()[0]
     if(entryID == 'WRK'):
-        data = (entryID, request.args.get('Status'), request.args.get('CompletionDate'))
+        data = (entryID, request.args.get('status'), request.args.get('completion_date'))
         command = []
         command.append("INSERT INTO work_order (entry_id, status, completion_date) ")
         command.append("VALUES (%s, '%s', '%s')" % data)
         cur.execute(''.join(command))
     if(entryID == 'PRC'):
-        data = (entryID, request.args.get('Status'))
+        data = (entryID, request.args.get('status'))
         command = []
         command.append("INSERT INTO purchase_order (entry_id, status) ")
         command.append("VALUES (%s, '%s')" % data)
