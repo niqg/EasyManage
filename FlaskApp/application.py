@@ -1,4 +1,4 @@
-from flask import Flask, json, jsonify, request, session
+from flask import Flask, json, jsonify, request#, session (which is not working for some reason)
 from flaskext.mysql import MySQL
 
 application = Flask(__name__)
@@ -8,6 +8,12 @@ application.config['MYSQL_DATABASE_PASSWORD'] = 'axolotl'
 application.config['MYSQL_DATABASE_DB'] = 'EasyManage'
 application.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(application)
+#application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
+session = {}
+
+def clearSession():
+    session.pop('user')
+    session.pop('org')
 
 #@application.route("/")
 #@application.route("/home")
@@ -49,18 +55,18 @@ def login():
         session['user'] = cur.fetchone()[0]
         session['org'] = None
     cur.close()
+    return jsonify(result=[])
 
 @application.route("/logout")
 def logout():
-    if 'user' in session:
-        session.pop('user', None)
-        session.pop('org', None)
+    clearSession()
+    return jsonify(result=[])
 
 @application.route("/entries",methods=['GET'])
 def getAllEntries():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
-    data = (session['org'],)
+    data = (session.get('org'),)
     command = []
     command.append("SELECT title, date_created, description, d_type FROM entry ")
     command.append("WHERE organization_id=%s" % data)
@@ -73,7 +79,7 @@ def getAllEntries():
 def addNewEntry():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
-    data = (session['user'], session['org'], request.args.get('title'), request.args.get('date_created'), request.args.get('description'), request.args.get('entry_t ype'))
+    data = (session.get('user'), session.get('org'), request.args.get('title'), request.args.get('date_created'), request.args.get('description'), request.args.get('entry_t ype'))
     command = []
     command.append("INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ")
     command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
@@ -96,6 +102,7 @@ def addNewEntry():
         cur.execute(''.join(command))
     mysql.get_db().commit()
     cur.close()
+    return jsonify(result=[])
 
 #@application.route("/entries/search?=<filter>",methods=['GET'])
 
@@ -172,5 +179,4 @@ def addNewEntry():
 #@application.route("/account/personnel/<employeeID>/permissions/modify",methods=['PUT'])
 
 if __name__ == '__main__':
-    application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
     application.run(host='0.0.0.0', port=5000)
