@@ -79,7 +79,7 @@ def getAllEntries():
 def addNewEntry():
     #If not logged in or not an employee return some error
     cur = mysql.get_db().cursor()
-    data = (session.get('user'), session.get('org'), request.args.get('title'), request.args.get('date_created'), request.args.get('description'), request.args.get('entry_t ype'))
+    data = (session.get('user'), session.get('org'), request.args.get('title'), request.args.get('date_created'), request.args.get('description'), request.args.get('entry_type'))
     command = []
     command.append("INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ")
     command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
