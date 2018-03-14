@@ -28,7 +28,7 @@ def login():
     command.append("WHERE google_client_id='%s'" % data)
     cur.execute(''.join(command))
     fetched = cur.fetchone()
-    if (fethced == None):
+    if (fetched == None):
         return jsonify(result=[-1])
     tag = fetched[0]
     if(tag == 'ORG'):
