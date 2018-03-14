@@ -1,4 +1,4 @@
-from flask import Flask, json, jsonify, request#, session (which is not working for some reason)
+from flask import Flask, json, jsonify, request, session
 from flaskext.mysql import MySQL
 
 application = Flask(__name__)
@@ -8,8 +8,8 @@ application.config['MYSQL_DATABASE_PASSWORD'] = 'axolotl'
 application.config['MYSQL_DATABASE_DB'] = 'EasyManage'
 application.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(application)
-#application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
-session = {}
+application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
+#session = {}
 
 def clearSession():
     session.pop('user')
@@ -27,8 +27,11 @@ def login():
     command.append("SELECT d_type FROM user ")
     command.append("WHERE google_client_id='%s'" % data)
     cur.execute(''.join(command))
-    fetched = cur.fetchone()[0]
-    if(fetched == 'ORG'):
+    fetched = cur.fetchone()
+    if (fethced == None):
+        return jsonify(result=[-1])
+    tag = fetched[0]
+    if(tag == 'ORG'):
         command = []
         command.append("SELECT user.user_id, organization.organization_id FROM user ")
         command.append("INNER JOIN organization ON user.user_id = organization.user_id ")
@@ -37,7 +40,7 @@ def login():
         fetched = cur.fetchone()
         session['user'] = fetched[0]
         session['org'] = fetched[1]
-    elif(fetched == 'EMP'):
+    elif(tag == 'EMP'):
         command = []
         command.append("SELECT user.user_id, employee.organization_id FROM ((user ")
         command.append("INNER JOIN employee_user ON user.user_id = employee_user.user_id) ")
@@ -47,7 +50,7 @@ def login():
         fetched = cur.fetchone()
         session['user'] = fetched[0]
         session['org'] = fetched[1]
-    elif(fetched == 'CON'):
+    elif(tag == 'CON'):
         command = []
         command.append("SELECT user_id FROM user ")
         command.append("WHERE google_client_id='%s'" % data)
@@ -55,7 +58,7 @@ def login():
         session['user'] = cur.fetchone()[0]
         session['org'] = None
     cur.close()
-    return jsonify(result=[])
+    return jsonify(result=[session['user']])
 
 @application.route("/logout")
 def logout():
