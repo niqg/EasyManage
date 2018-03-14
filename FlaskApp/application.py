@@ -1,4 +1,4 @@
-from flask import Flask, json, jsonify, request#, session (which is not working for some reason)
+from flask import Flask, json, jsonify, request, session
 from flaskext.mysql import MySQL
 
 application = Flask(__name__)
@@ -8,8 +8,8 @@ application.config['MYSQL_DATABASE_PASSWORD'] = 'axolotl'
 application.config['MYSQL_DATABASE_DB'] = 'EasyManage'
 application.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(application)
-#application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
-session = {}
+application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
+#session = {}
 
 def clearSession():
     session.pop('user')
