@@ -115,7 +115,7 @@ def getAllWorkOrders():
     command = []
     command.append("SELECT * FROM entry ")
     command.append("INNER JOIN work_order ON entry.entry_id = work_order.entry_id ")
-    command.append("WHERE entry.organization_id=%s AND entry.dType='WRK'" % data)
+    command.append("WHERE entry.organization_id=%s AND entry.d_type='WRK'" % data)
     filter = request.args.get('filter', '')
     if filter != '':
         command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
@@ -131,7 +131,7 @@ def getAllPurchaseOrders():
     command = []
     command.append("SELECT * FROM entry ")
     command.append("INNER JOIN purchase_order ON entry.entry_id = purchase_order.entry_id ")
-    command.append("WHERE entry.organization_id=%s AND entry.dType='PRC'" % data)
+    command.append("WHERE entry.organization_id=%s AND entry.d_type='PRC'" % data)
     filter = request.args.get('filter', '')
     if filter != '':
         command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
@@ -205,4 +205,5 @@ def getAllPurchaseOrders():
 #@application.route("/account/personnel/<employeeID>/permissions/modify",methods=['PUT'])
 
 if __name__ == '__main__':
+    application.debug = True
     application.run(host='0.0.0.0', port=5000)
