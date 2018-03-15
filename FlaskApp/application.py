@@ -73,13 +73,13 @@ def getAllEntries():
     command = []
     command.append("SELECT title, date_created, description, d_type FROM entry ")
     command.append("WHERE organization_id=%s" % data)
-    filter = request.args.get('filter', None)
-    if filter != None:
+    filter = request.args.get('filter', '')
+    if filter != '':
         command.append(" AND title LIKE '%%%s%%'" % (filter,))
     cur.execute(''.join(command))
-    toReturn = cur.fetchall()
+    result = cur.fetchall()
     cur.close()
-    return jsonify(result=data)
+    return jsonify(result=result)
 
 @application.route("/entries/new",methods=['POST'])
 def addNewEntry():
@@ -91,10 +91,7 @@ def addNewEntry():
     command.append("INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ")
     command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
     cur.execute(''.join(command))
-    command = []
-    command.append("SELECT @@IDENTITY")
-    cur.execute(''.join(command))
-    entryID = cur.fetchone()[0]
+    entryID = cur.lastrowid
     if(entryType == 'WRK'):
         data = (entryID, request.args.get('status'), request.args.get('completion_date'))
         command = []
@@ -117,15 +114,15 @@ def getAllWorkOrders():
     data = (session.get('org'),)
     command = []
     command.append("SELECT * FROM entry ")
-    command.append("FULL OUTER JOIN work_order ON entry.entry_id = work_order.entry_id ")
+    command.append("INNER JOIN work_order ON entry.entry_id = work_order.entry_id ")
     command.append("WHERE entry.organization_id=%s AND entry.dType='WRK'" % data)
-    filter = request.args.get('filter', None)
-    if filter != None:
+    filter = request.args.get('filter', '')
+    if filter != '':
         command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
     cur.execute(''.join(command))
-    data = cur.fetchall()
+    result = cur.fetchall()
     cur.close()
-    return jsonify(result=data)
+    return jsonify(result=result)
 
 @application.route("/entries/purchase",methods=['GET'])
 def getAllPurchaseOrders():
@@ -133,15 +130,15 @@ def getAllPurchaseOrders():
     data = (session.get('org'),)
     command = []
     command.append("SELECT * FROM entry ")
-    command.append("FULL OUTER JOIN purchase_order ON entry.entry_id = purchase_order.entry_id ")
+    command.append("INNER JOIN purchase_order ON entry.entry_id = purchase_order.entry_id ")
     command.append("WHERE entry.organization_id=%s AND entry.dType='PRC'" % data)
-    filter = request.args.get('filter', None)
-    if filter != None:
+    filter = request.args.get('filter', '')
+    if filter != '':
         command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
     cur.execute(''.join(command))
-    data = cur.fetchall()
+    result = cur.fetchall()
     cur.close()
-    return jsonify(result=data)
+    return jsonify(result=result)
 
 #@application.route("/entries/<entryID>",methods=['GET'])
 
