@@ -227,7 +227,52 @@ def getAllPurchaseOrders():
 
 #@application.route("/entries/<entryID>/modify",methods=['PUT'])
 
-#@application.route("/entries/<entryID>/remove",methods=['DELETE'])
+@application.route("/entries/<entryID>/remove",methods=['DELETE'])
+def removeEntry(entryID):
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'], entryID)
+    command = []
+    command.append("SELECT entry_id, d_type FROM entry ")
+    command.append("WHERE organization_id=%s AND entry_id=%s" % data)
+    cur.execute(''.join(command))
+    result = cur.fetchone()
+    if not result:
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given entry_id either does not belong to the logged in user's organization, or does not exist at all"
+        )
+    tag = result[1]
+    data = (entryID,)
+    if(tag == 'WRK'):
+        command = []
+        command.append("DELETE FROM work_order ")
+        command.append("WHERE entry_id=%s" % data)
+        cur.execute(''.join(command))
+    elif(tag == 'PRC'):
+        command = []
+        command.append("DELETE FROM purchase_order ")
+        command.append("WHERE entry_id=%s" % data)
+        cur.execute(''.join(command))
+    command = []
+    command.append("DELETE FROM entry ")
+    command.append("WHERE entry_id=%s" % data)
+    cur.execute(''.join(command))
+    mysql.get_db().commit()
+    cur.close()
+    return jsonify(
+        key=SUCCESS_KEY,
+        removed_entry_id=entryID
+    )
 
 #@application.route("/contacts",methods=['GET'])
 
