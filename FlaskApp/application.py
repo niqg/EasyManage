@@ -1,6 +1,10 @@
 from flask import Flask, json, jsonify, request, session
 from flaskext.mysql import MySQL
 
+ERROR_KEY = 0
+SUCCESS_KEY = 1
+WARNING_KEY = 2
+
 application = Flask(__name__)
 mysql = MySQL()
 application.config['MYSQL_DATABASE_USER'] = 'root'
@@ -9,27 +13,39 @@ application.config['MYSQL_DATABASE_DB'] = 'EasyManage'
 application.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(application)
 application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
-#session = {}
+#session = {} #For cookieless testing
 
 def clearSession():
-    session.pop('user')
-    session.pop('org')
+    session.pop('user', None)
+    session.pop('org', None)
 
 #@application.route("/")
 #@application.route("/home")
 
 @application.route("/login")
 def login():
-    #Should do someting if there is already a user logged in to the session
+    if 'user' in session:
+        return jsonify(
+            key=ERROR_KEY,
+            message='A user is already logged in'
+        )
+    if not ('google_client_id' in request.args):
+        return jsonify(
+            key=ERROR_KEY,
+            message='An ID must be passed'
+        )
     cur = mysql.get_db().cursor()
-    data = (request.args.get('google_client_id'),)
+    data = (request.args['google_client_id'],)
     command = []
     command.append("SELECT d_type FROM user ")
     command.append("WHERE google_client_id='%s'" % data)
     cur.execute(''.join(command))
     fetched = cur.fetchone()
-    if (fetched == None):
-        return jsonify(result=[-1])
+    if not fetched:
+        return jsonify(
+            key=WARNING_KEY,
+            message='User not found'
+        )
     tag = fetched[0]
     if(tag == 'ORG'):
         command = []
@@ -56,22 +72,43 @@ def login():
         command.append("WHERE google_client_id='%s'" % data)
         cur.execute(''.join(command))
         session['user'] = cur.fetchone()[0]
-        session['org'] = None
     cur.close()
-    return jsonify(result=[session['user']])
+    return jsonify(
+        key=SUCCESS_KEY,
+        user_type=tag,
+        user_id=session['user']
+    )
 
 @application.route("/logout")
 def logout():
+    if not ('user' in session):
+        return jsonify(
+            key=WARNING_KEY,
+            message='No user was logged in'
+        )
+    userID = session['user']
     clearSession()
-    return jsonify(result=[])
+    return jsonify(
+        key=SUCCESS_KEY,
+        last_user_id=userID
+    )
 
 @application.route("/entries",methods=['GET'])
 def getAllEntries():
-    #If not logged in or not an employee return some error
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
     cur = mysql.get_db().cursor()
-    data = (session.get('org'),)
+    data = (session['org'],)
     command = []
-    command.append("SELECT title, date_created, description, d_type FROM entry ")
+    command.append("SELECT entry_id, title, date_created, description, d_type FROM entry ")
     command.append("WHERE organization_id=%s" % data)
     filter = request.args.get('filter', '')
     if filter != '':
@@ -79,14 +116,31 @@ def getAllEntries():
     cur.execute(''.join(command))
     result = cur.fetchall()
     cur.close()
-    return jsonify(result=result)
+    if not result:
+        return jsonify(
+            key=WARRNING_KEY,
+            message='No entries were found'
+        )
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
 @application.route("/entries/new",methods=['POST'])
 def addNewEntry():
-    #If not logged in or not an employee return some error
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
     cur = mysql.get_db().cursor()
     entryType = request.args.get('entry_type')
-    data = (session.get('user'), session.get('org'), request.args.get('title'), request.args.get('date_created'), request.args.get('description'), entryType)
+    data = (session['user'], session['org'], request.args.get('title'), request.args.get('date_created'), request.args.get('description'), entryType)
     command = []
     command.append("INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ")
     command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
@@ -106,14 +160,27 @@ def addNewEntry():
         cur.execute(''.join(command))
     mysql.get_db().commit()
     cur.close()
-    return jsonify(result=[])
+    return jsonify(
+        key=SUCCESS_KEY,
+        new_entry_id=entryID
+    )
 
 @application.route("/entries/work",methods=['GET'])
 def getAllWorkOrders():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
     cur = mysql.get_db().cursor()
-    data = (session.get('org'),)
+    data = (session['org'],)
     command = []
-    command.append("SELECT * FROM entry ")
+    command.append("SELECT entry.entry_id, entry.title, entry.date_created, entry.description, work_order.status, work_order.completion_date FROM entry ")
     command.append("INNER JOIN work_order ON entry.entry_id = work_order.entry_id ")
     command.append("WHERE entry.organization_id=%s AND entry.d_type='WRK'" % data)
     filter = request.args.get('filter', '')
@@ -122,14 +189,27 @@ def getAllWorkOrders():
     cur.execute(''.join(command))
     result = cur.fetchall()
     cur.close()
-    return jsonify(result=result)
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
 @application.route("/entries/purchase",methods=['GET'])
 def getAllPurchaseOrders():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
     cur = mysql.get_db().cursor()
-    data = (session.get('org'),)
+    data = (session['org'],)
     command = []
-    command.append("SELECT * FROM entry ")
+    command.append("SELECT entry.entry_id, entry.title, entry.date_created, entry.description, purchase_order.status, purchase_order.purchase_ordercol FROM entry ")
     command.append("INNER JOIN purchase_order ON entry.entry_id = purchase_order.entry_id ")
     command.append("WHERE entry.organization_id=%s AND entry.d_type='PRC'" % data)
     filter = request.args.get('filter', '')
@@ -138,7 +218,10 @@ def getAllPurchaseOrders():
     cur.execute(''.join(command))
     result = cur.fetchall()
     cur.close()
-    return jsonify(result=result)
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
 #@application.route("/entries/<entryID>",methods=['GET'])
 
