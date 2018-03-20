@@ -1,8 +1,8 @@
 from flask import Flask, json, jsonify, request, session
 from flaskext.mysql import MySQL
 
-ERROR_KEY = 0
-SUCCESS_KEY = 1
+SUCCESS_KEY = 0
+ERROR_KEY = 1
 WARNING_KEY = 2
 
 application = Flask(__name__)
@@ -223,9 +223,124 @@ def getAllPurchaseOrders():
         data=result
     )
 
-#@application.route("/entries/<entryID>",methods=['GET'])
+@application.route("/entries/<entryID>",methods=['GET'])
+def showOneEntry(entryID):
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'], entryID)
+    command = []
+    command.append("SELECT d_type FROM entry ")
+    command.append("WHERE organization_id=%s AND entry_id=%s" % data)
+    cur.execute(''.join(command))
+    result = cur.fetchone()
+    if not result:
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given entry_id either does not belong to the logged in user's organization, or does not exist at all"
+        )
+    tag = result[1]
+    data = (entryID,)
+    command = []
+    if(tag == 'WRK'):
+        command.append("SELECT entry.entry_id, entry.title, entry.date_created, entry.description, work_order.status, work_order.completion_date FROM entry ")
+        command.append("INNER JOIN work_order ON entry.entry_id = work_order.entry_id ")
+        command.append("WHERE entry.entry_id=%s" % data)
+    elif(tag == 'PRC'):
+        command.append("SELECT entry.entry_id, entry.title, entry.date_created, entry.description, purchase_order.status, purchase_order.purchase_ordercol FROM entry ")
+        command.append("INNER JOIN purchase_order ON entry.entry_id = purchase_order.entry_id ")
+        command.append("WHERE entry.entry_id=%s" % data)
+    else:
+        command.append("SELECT entry_id, title, date_created, description FROM entry ")
+        command.append("WHERE entry.entry_id=%s" % data)
+    cur.execute(''.join(command))
+    result = cur.fetchall()
+    cur.close()
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
-#@application.route("/entries/<entryID>/modify",methods=['PUT'])
+@application.route("/entries/<entryID>/modify",methods=['PUT'])
+def modifyEntry(entryID):
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'], entryID)
+    command = []
+    command.append("SELECT entry_id, d_type FROM entry ")
+    command.append("WHERE organization_id=%s AND entry_id=%s" % data)
+    cur.execute(''.join(command))
+    result = cur.fetchone()
+    if not result:
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given entry_id either does not belong to the logged in user's organization, or does not exist at all"
+        )
+    tag = result[1]
+    if(tag == 'WRK'):
+        execute = False
+        command = []
+        command.append("UPDATE work_order SET ")
+        if 'status' in request.args:
+            command.append("status = '%s' " % (request.args['status'],))
+            execute = True
+        if 'completion_date' in request.args:
+            command.append("completion_date = '%s' " % (request.args['completion_date'],))
+            execute = True
+        if execute:
+            command.append("WHERE entry_id=%s" % entryID)
+            cur.execute(''.join(command))
+    elif(tag == 'PRC'):
+        execute = False
+        command = []
+        command.append("UPDATE purchase_order SET ")
+        if 'status' in request.args:
+            command.append("status = '%s' " % (request.args['status'],))
+            execute = True
+        if 'purchase_ordercol' in request.args:
+            command.append("purchase_ordercol = '%s' " % (request.args['purchase_ordercol'],))
+            execute = True
+        if execute:
+            command.append("WHERE entry_id=%s" % entryID)
+            cur.execute(''.join(command))
+    execute = False
+    command = []
+    command.append("UPDATE entry SET ")
+    if 'title' in request.args:
+        command.append("title = '%s' " % (request.args['title'],))
+        execute = True
+    if 'date_created' in request.args:
+        command.append("date_created = '%s' " % (request.args['date_created'],))
+        execute = True
+    if 'description' in request.args:
+        command.append("description = '%s' " % (request.args['description'],))
+        execute = True
+    if execute:
+        command.append("WHERE entry_id=%s" % entryID)
+        cur.execute(''.join(command))
+    mysql.get_db().commit()
+    cur.close()
+    return jsonify(
+        key=SUCCESS_KEY,
+        entry_edited=entryID
+    )
 
 @application.route("/entries/<entryID>/remove",methods=['DELETE'])
 def removeEntry(entryID):
