@@ -119,6 +119,7 @@ def getAllEntries():
     if not result:
         return jsonify(
             key=WARRNING_KEY,
+            data=[],
             message='No entries were found'
         )
     return jsonify(
@@ -189,6 +190,12 @@ def getAllWorkOrders():
     cur.execute(''.join(command))
     result = cur.fetchall()
     cur.close()
+    if not result:
+        return jsonify(
+            key=WARRNING_KEY,
+            data=[],
+            message='No work orders were found'
+        )
     return jsonify(
         key=SUCCESS_KEY,
         data=result
@@ -218,6 +225,12 @@ def getAllPurchaseOrders():
     cur.execute(''.join(command))
     result = cur.fetchall()
     cur.close()
+    if not result:
+        return jsonify(
+            key=WARRNING_KEY,
+            data=[],
+            message='No purchase orders were found'
+        )
     return jsonify(
         key=SUCCESS_KEY,
         data=result
