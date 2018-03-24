@@ -138,26 +138,54 @@ def addNewEntry():
        return jsonify(
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
-        )
+       )
+    argsPresent = ['employee_id', 'organization_id']
+    valuesPresent = [str(session['user']), str(session['org'])]
+    if (request.args.get('title', None) != None):
+        argsPresent.append("title")
+        valuesPresent.append(''.join(["'", request.args['title'], "'"]))
+    if (request.args.get('date_created', None) != None):
+        argsPresent.append("date_created")
+        valuesPresent.append(''.join(["'", request.args['date_created'], "'"]))
+    if (request.args.get('description', None) != None):
+        argsPresent.append("description")
+        valuesPresent.append(''.join(["'", request.args['description'], "'"]))
+    entryType = None
+    if (request.args.get('d_type', None) != None):
+        argsPresent.append("d_type")
+        valuesPresent.append(''.join(["'", request.args['entry_type'], "'"]))
+        entryType = request.args['entry_type']
     cur = mysql.get_db().cursor()
-    entryType = request.args.get('entry_type')
-    data = (session['user'], session['org'], request.args.get('title'), request.args.get('date_created'), request.args.get('description'), entryType)
     command = []
-    command.append("INSERT INTO entry (employee_id, organization_id, title, date_created, description, d_type) ")
-    command.append("VALUES (%s, %s, '%s', '%s', '%s', '%s')" % data)
+    command.append("INSERT INTO entry (%s) " % (', '.join(argsPresent),))
+    command.append("VALUES (%s)" % (', '.join(valuesPresent),))
     cur.execute(''.join(command))
     entryID = cur.lastrowid
     if(entryType == 'WRK'):
-        data = (entryID, request.args.get('status'), request.args.get('completion_date'))
+        argsPresent = ['entry_id']
+        valuesPresent = [str(entryID)]
+        if (request.args.get('status', None) != None):
+            argsPresent.append("status")
+            valuesPresent.append(''.join(["'", request.args['status'], "'"]))
+        if (request.args.get('completion_date', None) != None):
+            argsPresent.append("completion_date")
+            valuesPresent.append(''.join(["'", request.args['completion_date'], "'"]))
         command = []
-        command.append("INSERT INTO work_order (entry_id, status, completion_date) ")
-        command.append("VALUES (%s, '%s', '%s')" % data)
+        command.append("INSERT INTO work_order (%s) " % (', '.join(argsPresent),))
+        command.append("VALUES (%s)" % (', '.join(valuesPresent),))
         cur.execute(''.join(command))
     if(entryType == 'PRC'):
-        data = (entryID, request.args.get('status'), request.args.get('purchase_ordercol'))
+        argsPresent = ['entry_id']
+        valuesPresent = [str(entryID)]
+        if (request.args.get('status', None) != None):
+            argsPresent.append("status")
+            valuesPresent.append(''.join(["'", request.args['status'], "'"]))
+        if (request.args.get('purchase_ordercol', None) != None):
+            argsPresent.append("purchase_ordercol")
+            valuesPresent.append(''.join(["'", request.args['purchase_ordercol'], "'"]))
         command = []
-        command.append("INSERT INTO purchase_order (entry_id, status, purchase_ordercol) ")
-        command.append("VALUES (%s, '%s', '%s')" % data)
+        command.append("INSERT INTO purchase_order (%s) " % (', '.join(argsPresent),))
+        command.append("VALUES (%s)" % (', '.join(valuesPresent),))
         cur.execute(''.join(command))
     mysql.get_db().commit()
     cur.close()
@@ -312,10 +340,16 @@ def modifyEntry(entryID):
         command = []
         command.append("UPDATE work_order SET ")
         if 'status' in request.args:
-            command.append("status = '%s' " % (request.args['status'],))
+            if request.args['status'] != 'NULL':
+                command.append("status = '%s' " % (request.args['status'],))
+            else:
+                command.append("status = NULL ")
             execute = True
         if 'completion_date' in request.args:
-            command.append("completion_date = '%s' " % (request.args['completion_date'],))
+            if request.args['completion_date'] != 'NULL':
+                command.append("completion_date = '%s' " % (request.args['completion_date'],))
+            else:
+                command.append("completion_date = NULL ")
             execute = True
         if execute:
             command.append("WHERE entry_id=%s" % entryID)
@@ -325,10 +359,16 @@ def modifyEntry(entryID):
         command = []
         command.append("UPDATE purchase_order SET ")
         if 'status' in request.args:
-            command.append("status = '%s' " % (request.args['status'],))
+            if request.args['status'] != 'NULL':
+                command.append("status = '%s' " % (request.args['status'],))
+            else:
+                command.append("status = NULL ")
             execute = True
         if 'purchase_ordercol' in request.args:
-            command.append("purchase_ordercol = '%s' " % (request.args['purchase_ordercol'],))
+            if request.args['status'] != 'NULL':
+                command.append("purchase_ordercol = '%s' " % (request.args['purchase_ordercol'],))
+            else:
+                command.append("purchase_ordercol = NULL ")
             execute = True
         if execute:
             command.append("WHERE entry_id=%s" % entryID)
@@ -337,13 +377,22 @@ def modifyEntry(entryID):
     command = []
     command.append("UPDATE entry SET ")
     if 'title' in request.args:
-        command.append("title = '%s' " % (request.args['title'],))
+        if request.args['title'] != 'NULL':
+                command.append("title = '%s' " % (request.args['title'],))
+            else:
+                command.append("title = NULL ")
         execute = True
     if 'date_created' in request.args:
-        command.append("date_created = '%s' " % (request.args['date_created'],))
+        if request.args['date_created'] != 'NULL':
+                command.append("date_created = '%s' " % (request.args['date_created'],))
+            else:
+                command.append("date_created = NULL ")
         execute = True
     if 'description' in request.args:
-        command.append("description = '%s' " % (request.args['description'],))
+        if request.args['description'] != 'NULL':
+                command.append("description = '%s' " % (request.args['description'],))
+            else:
+                command.append("description = NULL ")
         execute = True
     if execute:
         command.append("WHERE entry_id=%s" % entryID)
