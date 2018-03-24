@@ -1,100 +1,113 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!-- New XML document created with EditiX XML Editor (http://www.editix.com) at Sat Feb 10 16:28:46 EST 2018 -->
-
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- New XML document created with EditiX XML Editor (http://www.editix.com) at Sat Feb 10 16
+:28:46 EST 2018 -->
 <html>
-
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 
     <!-- For Google Authentication, our client ID is in here as well. -->
-    <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="1062733567914-iqnpfifpl4bqrih5rr6dhkkctnl13j7e.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-	<script src="getEntryData.js"></script>
-
-    <title>EasyManage Powered by Rowan Axolotls</title>
-
+    <title>Powered by Axolotl Development</title>
+    <link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstraqp.min.css">
+    <meta name="google-signin-client_id" content="430084226490-l250drphth8ar7922g60ner0d4mujg
+5o.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async=async defer=defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/static/js/gSignIn.js"></script>
     <style type="text/css">
-        /* Header #1 "EasyManage" */
 
-        h1 {
-            background-color: gold;
-            color: 804000;
-            font-family: Courier;
-            display: block;
-            text-align: center;
-            line-height: 150%;
-            font-size: 2.45em;
+
+        /* Header #1 "EasyManage" */
+        .data{
+
+        display: none;
         }
 
+        h1 {
+        background-color: gold;
+        color: 804000;
+        font-family: Courier;
+        display: block;
+        text-align: center;
+        line-height: 150%;
+        font-size: 2.45em;
+        }
 
+        .g-signin2{
+         width: 100%;
+        }
+
+        .g-signin2 > div{
+          margin: 0 auto;
+        }
 
 
         /* Full-width input fields */
 
         input[type=username],
         input[type=password] {
-            width: 85%;
-            padding: 12px 18px;
-            margin: 10px 20;
-            display: inline-block;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
+        width: 85%;
+        padding: 12px 18px;
+        margin: 10px 20;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
         }
 
         /* Body Parameters */
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: url(facility.jpg) no-repeat;
-            background-size: 100% 100%;
-            margin: 0;
-            height: 100%;
-            overflow: hidden
+        font-family: Arial, Helvetica, sans-serif;
+        background: url(images/facility.jpg) no-repeat;
+        background-size: 100% 100%;
+        margin: 0;
+        height: 100%;
+        overflow: hidden
         }
 
         /* Center the image*/
 
         .imgcontainer {
-            text-align: center;
-            position: relative;
+        text-align: center;
+        position: relative;
         }
 
         /* Login button is in this frame*/
 
         .loginFrame {
-            padding-bottom: 6px;
+        padding-bottom: 6px;
         }
 
 
         img.axolotl {
-            size: 10%;
-            width: 30%;
-            border-radius: 30%;
-            padding-top: 1%;
-            padding-bottom: 5%;
-        }
+        size: 10%;
+        width: 30%;
+        border-radius: 30%;
+        padding-top: 1%;
+        padding-bottom: 5%;
+
+         }
 
 
         /* Stylize all buttons */
 
         button {
-            background-color: gold;
-            color: 804000;
-            padding: 10px 20px;
-            margin-left: 30%;
-            border: none;
-            cursor: pointer;
-            width: 40%;
+        background-color: gold;
+        color: 804000;
+        padding: 10px 20px;
+        margin-left: 30%;
+        border: none;
+        cursor: pointer;
+        width: 40%;
         }
 
         label {
-            font-family: Courier;
-            display: block;
-            text-align: center;
-            line-height: 100%;
-            font-size: 1.45em;
+        font-family: Courier;
+        display: block;
+        text-align: center;
+        line-height: 100%;
+        font-size: 1.45em;
         }
 
 
@@ -102,81 +115,79 @@
         /* Modal Content/Box - Contains everything in center box */
 
         .modal-content {
-            background-color: rgba(256, 256, 256, 0.5);
-            margin: 10% auto 15% auto;
-            /* 15% from the top, 15% from the bottom and centered */
-            border: 2px solid #888;
-            width: 30%;
-            /* Could be more or less, depending on screen size */
+        background-color: rgba(256, 256, 256, 0.5);
+        margin: 10% auto 15% auto;
+        /* 15% from the top, 15% from the bottom and centered */
+        border: 2px solid #888;
+        width: 30%;
+        /* Could be more or less, depending on screen size */
         }
 
         /* Add Zoom Animation */
 
         .animate {
-            -webkit-animation: animatezoom 0.6s;
-            animation: animatezoom 1.3s
+        -webkit-animation: animatezoom 0.6s;
+        animation: animatezoom 1.3s
         }
 
         @-webkit-keyframes animatezoom {
-            from {
-                -webkit-transform: scale(0)
-            }
-            to {
-                -webkit-transform: scale(1)
-            }
+        from {
+        -webkit-transform: scale(0)
+        }
+        to {
+        -webkit-transform: scale(1)
+        }
         }
 
         @keyframes animatezoom {
-            from {
-                transform: scale(0)
-            }
-            to {
-                transform: scale(1)
-            }
+        from {
+        transform: scale(0)
         }
+        to {
+        transform: scale(1)
+        }
+        }
+
+
     </style>
-
 </head>
-
 <body>
 
 
     <div id="loginModule" class="modal">
 
-        <form class="modal-content animate" action="userPage.html">
+        <form class="modal-content animate">
             <div class="imgcontainer">
                 <h1>EasyManage</h1>
-                <img src="axolotl.jpg" alt="ax" class="axolotl">
+                <img src="images/axolotl.jpg" alt="ax" class="axolotl" />
             </div>
-
             <div class="loginFrame">
-                <button type="submit">Login</button>
+                 <div class="g-signin2" data-onsuccess="onSignIn"</div>
+                 <div class="data">
+                        <p>Profile Details</p>
+                        <img id="pic" class="img-circle" width="100" height="100"/>
+                        <p>Email Address</p>
+                        <p id="email" class="alert alert-danger"></p>
+                        <button onclick="signOut()" class="btn btn-danger">SignOut</button>
+                <script>
+                        function onSignIn(googleUser) {
+                        var profile = googleUser.getBasicProfile();
+                        console.log('ID: ' + profile.getId()); // Do not send to your backend
+! Use an ID token instead.
+                        console.log('Name: ' + profile.getName());
+                        console.log('Image URL: ' + profile.getImageUrl());
+                        console.log('Email: ' + profile.getEmail()); // This is null if the '
+email' scope is not present.
+                        }
+                </script>
 
-            </div>
+
+
+                 </div>
         </form>
     </div>
-<!-- For Google Authentication
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-    <script>
-      function onSignIn(googleUser) {
-        // Useful data for your client-side scripts:
-        var profile = googleUser.getBasicProfile();
-        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-        console.log('Full Name: ' + profile.getName());
-        console.log('Given Name: ' + profile.getGivenName());
-        console.log('Family Name: ' + profile.getFamilyName());
-        console.log("Image URL: " + profile.getImageUrl());
-        console.log("Email: " + profile.getEmail());
 
-        // The ID token you need to pass to your backend:
-        var id_token = googleUser.getAuthResponse().id_token;
-        console.log("ID Token: " + id_token);
-      };
-    </script>
--->
 
-    
 
 </body>
-
 </html>
