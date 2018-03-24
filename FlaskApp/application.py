@@ -141,17 +141,17 @@ def addNewEntry():
        )
     argsPresent = ['employee_id', 'organization_id']
     valuesPresent = [str(session['user']), str(session['org'])]
-    if (request.args.get('title', None) != None):
+    if (request.args.get('title', 'NULL') != 'NULL'):
         argsPresent.append("title")
         valuesPresent.append(''.join(["'", request.args['title'], "'"]))
-    if (request.args.get('date_created', None) != None):
+    if (request.args.get('date_created', 'NULL') != 'NULL'):
         argsPresent.append("date_created")
         valuesPresent.append(''.join(["'", request.args['date_created'], "'"]))
-    if (request.args.get('description', None) != None):
+    if (request.args.get('description', 'NULL') != 'NULL'):
         argsPresent.append("description")
         valuesPresent.append(''.join(["'", request.args['description'], "'"]))
     entryType = None
-    if (request.args.get('d_type', None) != None):
+    if (request.args.get('d_type', 'NULL') != 'NULL'):
         argsPresent.append("d_type")
         valuesPresent.append(''.join(["'", request.args['entry_type'], "'"]))
         entryType = request.args['entry_type']
@@ -164,10 +164,10 @@ def addNewEntry():
     if(entryType == 'WRK'):
         argsPresent = ['entry_id']
         valuesPresent = [str(entryID)]
-        if (request.args.get('status', None) != None):
+        if (request.args.get('status', 'NULL') != 'NULL'):
             argsPresent.append("status")
             valuesPresent.append(''.join(["'", request.args['status'], "'"]))
-        if (request.args.get('completion_date', None) != None):
+        if (request.args.get('completion_date', 'NULL') != 'NULL'):
             argsPresent.append("completion_date")
             valuesPresent.append(''.join(["'", request.args['completion_date'], "'"]))
         command = []
@@ -177,10 +177,10 @@ def addNewEntry():
     if(entryType == 'PRC'):
         argsPresent = ['entry_id']
         valuesPresent = [str(entryID)]
-        if (request.args.get('status', None) != None):
+        if (request.args.get('status', 'NULL') != 'NULL'):
             argsPresent.append("status")
             valuesPresent.append(''.join(["'", request.args['status'], "'"]))
-        if (request.args.get('purchase_ordercol', None) != None):
+        if (request.args.get('purchase_ordercol', 'NULL') != 'NULL'):
             argsPresent.append("purchase_ordercol")
             valuesPresent.append(''.join(["'", request.args['purchase_ordercol'], "'"]))
         command = []
