@@ -276,6 +276,11 @@ def showOneEntry(entryID):
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
         )
+    if not entryID.isdigit():
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given entry_id was not a valid positive integer"
+        )
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
     command = []
@@ -321,6 +326,11 @@ def modifyEntry(entryID):
        return jsonify(
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
+        )
+    if not entryID.isdigit():
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given entry_id was not a valid positive integer"
         )
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
@@ -416,6 +426,29 @@ def removeEntry(entryID):
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
         )
+    if not entryID.isdigit():
+        # The following is just for testing and should be removed in the final product
+        cur = mysql.get_db().cursor()
+        if (entryID == 'WRK'):
+            cur.execute("DELETE FROM work_order")
+            cur.execute("DELETE FROM entry WHERE d_type='WRK'")
+        if (entryID == 'PRC'):
+            cur.execute("DELETE FROM purchase_order")
+            cur.execute("DELETE FROM entry WHERE d_type='PRC'")
+        if (entryID == 'NULL'):
+            cur.execute("DELETE FROM entry WHERE d_type IS NULL")
+        if (entryID == 'ALL'):
+            cur.execute("DELETE FROM work_order")
+            cur.execute("DELETE FROM purchase_order")
+            cur.execute("DELETE FROM entry")
+        mysql.get_db().commit()
+        cur.close()
+        # End of testing segment
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given entry_id was not a valid positive integer"
+        )
+    
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
     command = []
