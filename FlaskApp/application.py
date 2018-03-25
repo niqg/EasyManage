@@ -118,7 +118,7 @@ def getAllEntries():
     cur.close()
     if not result:
         return jsonify(
-            key=WARRNING_KEY,
+            key=WARNING_KEY,
             data=[],
             message='No entries were found'
         )
@@ -151,7 +151,7 @@ def addNewEntry():
         argsPresent.append("description")
         valuesPresent.append(''.join(["'", request.args['description'], "'"]))
     entryType = None
-    if (request.args.get('d_type', 'NULL') != 'NULL'):
+    if (request.args.get('entry_type', 'NULL') != 'NULL'):
         argsPresent.append("d_type")
         valuesPresent.append(''.join(["'", request.args['entry_type'], "'"]))
         entryType = request.args['entry_type']
@@ -220,7 +220,7 @@ def getAllWorkOrders():
     cur.close()
     if not result:
         return jsonify(
-            key=WARRNING_KEY,
+            key=WARNING_KEY,
             data=[],
             message='No work orders were found'
         )
@@ -255,7 +255,7 @@ def getAllPurchaseOrders():
     cur.close()
     if not result:
         return jsonify(
-            key=WARRNING_KEY,
+            key=WARNING_KEY,
             data=[],
             message='No purchase orders were found'
         )
@@ -388,21 +388,21 @@ def modifyEntry(entryID):
     command.append("UPDATE entry SET ")
     if 'title' in request.args:
         if request.args['title'] != 'NULL':
-                command.append("title = '%s' " % (request.args['title'],))
-            else:
-                command.append("title = NULL ")
+            command.append("title = '%s' " % (request.args['title'],))
+        else:
+            command.append("title = NULL ")
         execute = True
     if 'date_created' in request.args:
         if request.args['date_created'] != 'NULL':
-                command.append("date_created = '%s' " % (request.args['date_created'],))
-            else:
-                command.append("date_created = NULL ")
+            command.append("date_created = '%s' " % (request.args['date_created'],))
+        else:
+            command.append("date_created = NULL ")
         execute = True
     if 'description' in request.args:
         if request.args['description'] != 'NULL':
-                command.append("description = '%s' " % (request.args['description'],))
-            else:
-                command.append("description = NULL ")
+            command.append("description = '%s' " % (request.args['description'],))
+        else:
+            command.append("description = NULL ")
         execute = True
     if execute:
         command.append("WHERE entry_id=%s" % entryID)
