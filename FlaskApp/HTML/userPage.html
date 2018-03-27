@@ -1,44 +1,43 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <title>Axolotl Senior Project</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="google-signin-client_id" content="625994366896-4q3gg8fssetf4jvrum72uhcnv1rahcje.apps.googleusercontent.com">  <script src="https://apis.google.com/js/platform.js" async defer></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <script src="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"></script>
-   <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="./Main Screen_files/jquery.mobile-1.4.5.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <script src="./Main Screen_files/jquery.mobile-1.4.5.min.js"></script>
-   <script type=text/javascript
-          src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script type=text/javascript>
-          var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-        </script> 
-    <script scr="addingANewEntry.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  
-  <script src="addNewEntry.js"></script>
-  <script src="addExampleEntry.js"></script>
-  
+<title>Axolotl Senior Project asdfasdfasdf</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://apis.google.com/js/platform.js" async=async  defer=defer></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.mi
+n.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/static/js/gSignOut.js"></script>
+<script src="/static/js/jQuery.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script src="/static/js/addNewEntry.js"></script>
+  <script src="/static/js/getEntries.js"></script>
+  <script>getEntries();</script>
+  <script src="/static/js/getWorkOrders.js"></script>
+  <script src="/static/js/getPurchaseOrders.js"></script>
+  <script src="/static/js/getContacts.js"></script>
+  <script src="/static/js/getCalendar.js"></script>
+  <script src="/static/js/getGeneralInfo.js"></script>
+  <script src="/static/js/getTutorials.js"></script>
+  <script src="/static/js/getSettings.js"></script>
+  <script src="/static/js/createEntry.js"></script>
+  <script>googleSignOut();</script>
   <style>
     .data{
       display:none;
     }
   </style>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="script.js"></script>
 
 </head>
 
 <body>
 
-	
+
   <style>
     .btn-primary {
       block-size: 60px;
@@ -71,23 +70,18 @@
       </form>
       <ul class="nav navbar-nav navbar-right">
         <li>
-          <a href="http://google.com">
-            <span class="glyphicon glyphicon-user"></span> Sign Up</a>
-        </li>
-        <li>
-          <a href="#">
-            <span class="glyphicon glyphicon-log-in"></span> Login</a>
+          <a href="#" onClick="googleSignOut()">
+            <span class="glyphicon glyphicon-log-in"></span> Logout</a>
+
         </li>
       </ul>
     </div>
   </nav>
-  <div class="g-signin2" data-onsuccess="onSignIn"></div>
   <div class="data">
   <p>Profile Details</p>
   <img id="pic" class="img-circle" width="100" height="100"/>
   <p>Email Address</p>
   <p id="email" class="alert alert-danger"></p>
-  <button onclick="signOut()" class="btn btn-danger">SignOut</button>
   </div>
 
   <div class="container" style="position: absolute;left:70px">
@@ -103,14 +97,23 @@
               <div class="row">
                 <div class='wrapper text-center'>
                   <div class="btn-group-vertical">
-                    <button type="button" id="entriesButton" class="btn btn-primary">Entries</button>
-                    <button type="button" id="workOrderbutton" class="btn btn-primary">Work Orders</button>
-                    <button type="button" id="purchaseButton" class="btn btn-primary">Purchase Order</button>
-                    <button type="button" id="contactButton" class="btn btn-primary">Contacts</button>
-                    <button type="button" id="calendarButton" class="btn btn-primary">Calandar</button>
-                    <button type="button" id="generalInfoButton" class="btn btn-primary">General Info</button>
-                    <button type="button" id="tutorialButton" class="btn btn-primary">Tutorials</button>
-                    <button type="button" id="settingButton" class="btn btn-primary">Settings</button>
+                    <button type="button" id="entriesButton" class="btn btn-primary" onclick=
+"getEntries()">Entries</button>
+
+                    <button type="button" id="workOrderbutton" class="btn btn-primary" onclic
+k="getWorkOrders()">Work Orders</button>
+                    <button type="button" id="purchaaseButton" class="btn btn-primary" onclic
+k="getPurchaseOrders()">Purchase Order</button>
+                    <button type="button" id="contactButton" class="btn btn-primary" onclick=
+"getContacts()">Contacts</button>
+                    <button type="button" id="calendarButton" class="btn btn-primary" onclick
+="getCalendar()">Calandar</button>
+                    <button type="button" id="generalInfoButton" class="btn btn-primary" oncl
+ick="getGeneralInfo()">General Info</button>
+                    <button type="button" id="tutorialButton" class="btn btn-primary" onclick
+="getTutorials()">Tutorials</button>
+                    <button type="button" id="settingButton" class="btn btn-primary" onclick=
+"createEntry()">Settings</button>
                   </div>
                 </div>
               </div>
@@ -119,33 +122,23 @@
         </div>
         <div class="col-sm-10">
           <div class="panel panel-default" style="width: 1000px;">
-            <div class="panel-heading">Content Window</div>
-            <div class="panel-body fixed-panel" style="overflow: auto; max-height: 500px; position: top;left:10px;right: 15px;">
-			<h3> entries </h3>
-				<script src="getAllEntries.js"></script>
-              <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <div class="panel-heading" id="panelHeader">Content Window</div>
+            <div id ="panelBody" class="panel-body fixed-panel" style="overflow: auto; max-he
+ight: 500px; position: top;left:10px;right: 15px;">
+                        <h3 id="entryHeader"> Entries </h3>
+                <table id="entries" class="table table-striped table-bordered" cellspacing="0
+" width="100%">
                 <thead>
-                  <tr>
-                    <th style="width: 14.66%">Entry ID</th>
-                    <th style="width: 14.66%">Type</th>
-                    <th style="width: 14.66%">Title</th>
-                    <th style="width: 14.66%">Created By</th>
-                    <th style="width: 14.66%">Date Created</th>
-                    <th style="width: 28.66%">Description</th>
+                  <tr id="tableHeaderRow">
+                    <th style="width: 15%">Entry ID</th>
+                    <th style="width: 15%">Title</th>
+                    <th style="width: 15%">Date Created</th>
+                    <th style="width: 15%">Type</th>
+                    <th style="width: 40%">Description</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>Tiger Nixon</td>
-                    <td>System Architect</td>
-                    <td>Edinburgh</td>
-                    <td>61</td>
-                    <td>2011/04/25</td>
-                    <td>descriptioasdfan</td>
-                  </tr>
-                </tbody>
+                <tbody id="tbodyid"></tbody>
               </table>
-
             </div>
           </div>
         </div>
@@ -153,9 +146,11 @@
       </div>
       <div class="col-sm-10" style="float: right">
         <div class="btn-toolbar" style="padding-top: 10px;">
-          <!--<button type="button" href="https://google.com" class="btn btn-primary" style="float: right;">Create Entry</button>-->
+          <!--<button type="button" href="https://google.com" class="btn btn-primary" style="
+float: right;">Create Entry</button>-->
           <div class="button group" style="float: right;">
-            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#createEntryModal">Create Entry</button>
+            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target
+="#createEntryModal">Create Entry</button>
           </div>
           <!-- Modal -->
           <div class="modal" id="createEntryModal" role="dialog">
@@ -169,14 +164,17 @@
                   <form>
                     <div class="block">
                       <label for="entryTitle">Title</label>
-                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset
+">
                         <input type="text" name="title" id="title" placeholder="title" ;="">
                       </div>
                     </div>
                       <div class="block">
                           <label for="entryTitle">Date</label>
-                          <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
-                              <input type="text" name="date" id="date" placeholder="date here" ;="">
+                          <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-i
+nset">
+                              <input type="text" name="date" id="date" placeholder="date here
+" ;="">
                           </div>
                       </div>
                     <div class="block">
@@ -192,16 +190,20 @@
                     </div>
                     <div class="block">
                       <label for="entryDescription">Description</label>
-                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
-                        <textarea class="form-control" id="description" rows="5" placeholder="Write description here" required></textarea>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset
+">
+                        <textarea class="form-control" id="description" rows="5" placeholder=
+"Write description here" required></textarea>
                       </div>
                     </div>
                   </form>
                 </div>
                 <div class="modal-footer">
                   <div class="button group" style="float: right;">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-default" onclick="generate_table()" >Create</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close<
+/button>
+                    <button type="button" class="btn btn-default" onclick="generate_table()"
+>Create</button>
                   </div>
                 </div>
               </div>
@@ -213,10 +215,10 @@
     </div>
 
   </div>
-  
-    <script src="matchHeight.js"></script>
-	<script src="addExampleEntry.js"></script>
-	
+    <script src="static/js/matchHeight.js"></script>
+
+
+
 
 
 
