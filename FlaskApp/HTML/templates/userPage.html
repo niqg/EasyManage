@@ -13,7 +13,13 @@ n.css">
 <script src="/static/js/gSignOut.js"></script>
 <script src="/static/js/jQuery.js"></script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      
+      <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
 
   <script src="/static/js/addNewEntry.js"></script>
   <script src="/static/js/getEntries.js"></script>
@@ -27,6 +33,7 @@ n.css">
   <script src="/static/js/getSettings.js"></script>
   <script src="/static/js/postEntry.js"></script>
   <script src=" /static/js/deleteEntry.js"></script>
+
 
   <style>
     .data{
@@ -106,8 +113,7 @@ n.css">
 					<button type="button" id="generalInfoButton" class="btn btn-primary" onclick="getGeneralInfo()">General Entries</button>
                     <button type="button" id="contactButton" class="btn btn-primary" onclick=
 "getContacts()">Contacts</button>
-                    <button type="button" id="calendarButton" class="btn btn-primary" onclick
-="getCalendar()">Calendar</button>
+                    <button type="button" id="calendarButton" class="btn btn-primary" onclick="getCalendar()">Calendar</button>
                     <button type="button" id="tutorialButton" class="btn btn-primary" onclick
 ="getTutorials()">Tutorials</button>
                     <button type="button" id="settingButton" class="btn btn-primary" onclick=
