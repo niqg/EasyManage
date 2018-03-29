@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Axolotl Senior Project asdfasdfasdf</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://apis.google.com/js/platform.js" async=async  defer=defer></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.mi
+n.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/static/js/gSignOut.js"></script>
+<script src="/static/js/jQuery.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script src="/static/js/addNewEntry.js"></script>
+  <script src="/static/js/getEntries.js"></script>
+  <script>getEntries();</script>
+  <script src="/static/js/getWorkOrders.js"></script>
+  <script src="/static/js/getPurchaseOrders.js"></script>
+  <script src="/static/js/getContacts.js"></script>
+  <script src="/static/js/getCalendar.js"></script>
+  <script src="/static/js/getGeneralInfo.js"></script>
+  <script src="/static/js/getTutorials.js"></script>
+  <script src="/static/js/getSettings.js"></script>
+  <script src="/static/js/postEntry.js"></script>
+  <script src=" /static/js/deleteEntry.js"></script>
+
+  <style>
+    .data{
+      display:none;
+    }
+  </style>
+
+</head>
+
+<body>
+
+
+  <style>
+    .btn-primary {
+      block-size: 60px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
+  </style>
+
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Axolotl EasyManage</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active">
+          <a href="#">Home</a>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left" action="/action_page.php">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search" name="search">
+          <div class="input-group-btn">
+            <button class="btn btn-default" type="submit">
+              <i class="glyphicon glyphicon-search"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a href="#" onClick="googleSignOut()">
+            <span class="glyphicon glyphicon-log-in"></span> Logout</a>
+
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="data">
+  <p>Profile Details</p>
+  <img id="pic" class="img-circle" width="100" height="100"/>
+  <p>Email Address</p>
+  <p id="email" class="alert alert-danger"></p>
+  </div>
+
+  <div class="container" style="position: absolute;left:70px">
+    <h3>EasyManage Prototype</h3>
+    <p>powered by Rowan Axolotls</p>
+    <div class="panel-group">
+      <div class="row equal-height-panels">
+        <!--Script for Making Collumns the same height-->
+        <div class="col-sm-2">
+          <div class="panel panel-default">
+            <div class="panel-heading">Navigation Bar</div>
+            <div class="panel-body">
+              <div class="row">
+                <div class='wrapper text-center'>
+                  <div class="btn-group-vertical">
+                    <button type="button" id="entriesButton" class="btn btn-primary" onclick=
+"getEntries()">Entries</button>
+
+                    <button type="button" id="workOrderbutton" class="btn btn-primary" onclick="getWorkOrders()">Work Orders</button>
+                    <button type="button" id="purchaaseButton" class="btn btn-primary" onclick="getPurchaseOrders()">Purchase Order</button>
+					<button type="button" id="generalInfoButton" class="btn btn-primary" onclick="getGeneralInfo()">General Entries</button>
+                    <button type="button" id="contactButton" class="btn btn-primary" onclick=
+"getContacts()">Contacts</button>
+                    <button type="button" id="calendarButton" class="btn btn-primary" onclick
+="getCalendar()">Calendar</button>
+                    <button type="button" id="tutorialButton" class="btn btn-primary" onclick
+="getTutorials()">Tutorials</button>
+                    <button type="button" id="settingButton" class="btn btn-primary" onclick=
+"getSettings()">Settings</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-10">
+          <div class="panel panel-default" style="width: 1000px;">
+            <div class="panel-heading" id="panelHeader">Content Window</div>
+            <div id ="panelBody" class="panel-body fixed-panel" style="overflow: auto; max-height: 500px; position: top;left:10px;right: 15px;">
+                        <h3 id="entryHeader"> Entries </h3>
+                        
+                <table id="tableid" class="table table-striped table-bordered" cellspacing="0
+" width="100%">
+                
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="col-sm-10" style="float: right">
+        <div class="btn-toolbar" style="padding-top: 10px;">
+          <!--<button type="button" href="https://google.com" class="btn btn-primary" style="
+float: right;">Create Entry</button>-->
+          <div class="button group" style="float: right;">
+            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target
+="#createEntryModal">Create Entry</button>
+          </div>
+          <!-- Modal -->
+          <div class="modal" id="createEntryModal" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title" style="text-align: center;">Create Entry</h4>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    <div class="block">
+                      <label for="entryTitle">Title</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset
+">
+                        <input type="text" name="title" id="createEntryTitle" placeholder="title" ;="">
+                      </div>
+                    </div>
+                    <div class="block">
+                      <label for="entryType">Entry Type</label>
+                      <div id="select" class="ui-btn">
+                        <select class="form-control" id="createEntryType">
+                          <option value="NULL">General Entry</option>
+                          <option value="WRK">Work Order</option>
+                          <option value="PRC">Purchase Order</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="block">
+                      <label>Description</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset
+">
+                        <textarea class="form-control" id="createEntryDescription" rows="5" placeholder=
+"Write description here" required></textarea>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <div class="button group" style="float: right;">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" onclick="postEntry()">Create</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+
+
+
+
+      <div class="col-sm-10" style="float: right">
+        <div class="btn-toolbar" style="padding-top: 10px;">
+          <div class="button group" style="float: right;">
+            <button type="button" class="btn btn-info btn-lg" data-toggle="deleteModal" data-target="#deleteEntryModal">Delete Entry</button>
+          </div>
+          <!-- Modal -->
+          <div class="deleteModal" id="deleteEntryModal" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title" style="text-align: center;">Delete Entry</h4>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    <div class="block">
+                      <label for="entryTitle">Enter Entry ID:</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                        <input type="text" name="deleteId" id="deleteid" placeholder="Entry ID" ;="">
+                      </div>
+                    </div>  
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <div class="button group" style="float: right;">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" onclick="deleteEntry()">Delete</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+    <script src="static/js/matchHeight.js"></script>
+
+
+
+
+
+
+</body>
+
+</html>
