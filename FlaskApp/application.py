@@ -1,4 +1,4 @@
-from flask import Flask, json, jsonify, request, session
+from flask import Flask, json, jsonify, request, session, render_template
 from flaskext.mysql import MySQL
 
 SUCCESS_KEY = 0
@@ -19,23 +19,31 @@ def clearSession():
     session.pop('user', None)
     session.pop('org', None)
 
-#@application.route("/")
-#@application.route("/home")
+@application.route("/")
+@application.route("/home")
+def home():
+    return render_template('userPage.html')
 
-@application.route("/login")
+@application.route("/index")
+def index():
+    return render_template('index.html')
+
+@application.route("/login", methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        return render_template('index.html')
     if 'user' in session:
         return jsonify(
             key=ERROR_KEY,
             message='A user is already logged in'
         )
-    if not ('google_client_id' in request.args):
+    if not ('google_client_id' in request.form):
         return jsonify(
             key=ERROR_KEY,
             message='An ID must be passed'
         )
     cur = mysql.get_db().cursor()
-    data = (request.args['google_client_id'],)
+    data = (request.form['google_client_id'],)
     command = []
     command.append("SELECT d_type FROM user ")
     command.append("WHERE google_client_id='%s'" % data)
@@ -98,7 +106,7 @@ def getAllEntries():
     if not ('user' in session):
         return jsonify(
             key=ERROR_KEY,
-            message='No user is logged in'
+            message=['No user is logged in']
         )
     if not ('org' in session):
        return jsonify(
@@ -141,20 +149,20 @@ def addNewEntry():
        )
     argsPresent = ['employee_id', 'organization_id']
     valuesPresent = [str(session['user']), str(session['org'])]
-    if (request.args.get('title', 'NULL') != 'NULL'):
+    if (request.form.get('title', 'NULL') != 'NULL'):
         argsPresent.append("title")
-        valuesPresent.append(''.join(["'", request.args['title'], "'"]))
-    if (request.args.get('date_created', 'NULL') != 'NULL'):
+        valuesPresent.append(''.join(["'", request.form['title'], "'"]))
+    if (request.form.get('date_created', 'NULL') != 'NULL'):
         argsPresent.append("date_created")
-        valuesPresent.append(''.join(["'", request.args['date_created'], "'"]))
-    if (request.args.get('description', 'NULL') != 'NULL'):
+        valuesPresent.append(''.join(["'", request.form['date_created'], "'"]))
+    if (request.form.get('description', 'NULL') != 'NULL'):
         argsPresent.append("description")
-        valuesPresent.append(''.join(["'", request.args['description'], "'"]))
+        valuesPresent.append(''.join(["'", request.form['description'], "'"]))
     entryType = None
-    if (request.args.get('entry_type', 'NULL') != 'NULL'):
+    if (request.form.get('entry_type', 'NULL') != 'NULL'):
         argsPresent.append("d_type")
-        valuesPresent.append(''.join(["'", request.args['entry_type'], "'"]))
-        entryType = request.args['entry_type']
+        valuesPresent.append(''.join(["'", request.form['entry_type'], "'"]))
+        entryType = request.form['entry_type']
     cur = mysql.get_db().cursor()
     command = []
     command.append("INSERT INTO entry (%s) " % (', '.join(argsPresent),))
@@ -164,12 +172,12 @@ def addNewEntry():
     if(entryType == 'WRK'):
         argsPresent = ['entry_id']
         valuesPresent = [str(entryID)]
-        if (request.args.get('status', 'NULL') != 'NULL'):
+        if (request.form.get('status', 'NULL') != 'NULL'):
             argsPresent.append("status")
-            valuesPresent.append(''.join(["'", request.args['status'], "'"]))
-        if (request.args.get('completion_date', 'NULL') != 'NULL'):
+            valuesPresent.append(''.join(["'", request.form['status'], "'"]))
+        if (request.form.get('completion_date', 'NULL') != 'NULL'):
             argsPresent.append("completion_date")
-            valuesPresent.append(''.join(["'", request.args['completion_date'], "'"]))
+            valuesPresent.append(''.join(["'", request.form['completion_date'], "'"]))
         command = []
         command.append("INSERT INTO work_order (%s) " % (', '.join(argsPresent),))
         command.append("VALUES (%s)" % (', '.join(valuesPresent),))
@@ -177,12 +185,12 @@ def addNewEntry():
     if(entryType == 'PRC'):
         argsPresent = ['entry_id']
         valuesPresent = [str(entryID)]
-        if (request.args.get('status', 'NULL') != 'NULL'):
+        if (request.form.get('status', 'NULL') != 'NULL'):
             argsPresent.append("status")
-            valuesPresent.append(''.join(["'", request.args['status'], "'"]))
-        if (request.args.get('purchase_ordercol', 'NULL') != 'NULL'):
+            valuesPresent.append(''.join(["'", request.form['status'], "'"]))
+        if (request.form.get('purchase_ordercol', 'NULL') != 'NULL'):
             argsPresent.append("purchase_ordercol")
-            valuesPresent.append(''.join(["'", request.args['purchase_ordercol'], "'"]))
+            valuesPresent.append(''.join(["'", request.form['purchase_ordercol'], "'"]))
         command = []
         command.append("INSERT INTO purchase_order (%s) " % (', '.join(argsPresent),))
         command.append("VALUES (%s)" % (', '.join(valuesPresent),))
@@ -192,6 +200,40 @@ def addNewEntry():
     return jsonify(
         key=SUCCESS_KEY,
         new_entry_id=entryID
+    )
+
+@application.route("/entries/general",methods=['GET'])
+def getAllGenericEntries():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'],)
+    command = []
+    command.append("SELECT entry_id, title, date_created, description FROM entry ")
+    command.append("WHERE organization_id=%s AND d_type is NULL" % data)
+    filter = request.args.get('filter', '')
+    if filter != '':
+        command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
+    cur.execute(''.join(command))
+    result = cur.fetchall()
+    cur.close()
+    if not result:
+        return jsonify(
+            key=WARNING_KEY,
+            data=[],
+            message='No generic entries were found'
+        )
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
     )
 
 @application.route("/entries/work",methods=['GET'])
@@ -264,22 +306,28 @@ def getAllPurchaseOrders():
         data=result
     )
 
-@application.route("/entries/<entryID>",methods=['GET'])
-def showOneEntry(entryID):
+@application.route("/entries/view",methods=['GET'])
+def showOneEntry():
     if not ('user' in session):
         return jsonify(
             key=ERROR_KEY,
             message='No user is logged in'
         )
     if not ('org' in session):
-       return jsonify(
+        return jsonify(
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
         )
+    if not ('entry_id' in request.args):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No entry_id given'
+        )
+    entryID = request.args['entry_id']
     if not entryID.isdigit():
         return jsonify(
             key=ERROR_KEY,
-            message="The given entry_id was not a valid positive integer"
+            message='The given entry_id was not a valid positive integer'
         )
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
@@ -293,7 +341,7 @@ def showOneEntry(entryID):
             key=ERROR_KEY,
             message="The given entry_id either does not belong to the logged in user's organization, or does not exist at all"
         )
-    tag = result[1]
+    tag = result[0]
     data = (entryID,)
     command = []
     if(tag == 'WRK'):
@@ -315,8 +363,8 @@ def showOneEntry(entryID):
         data=result
     )
 
-@application.route("/entries/<entryID>/modify",methods=['PUT'])
-def modifyEntry(entryID):
+@application.route("/entries/modify",methods=['PUT'])
+def modifyEntry():
     if not ('user' in session):
         return jsonify(
             key=ERROR_KEY,
@@ -327,6 +375,12 @@ def modifyEntry(entryID):
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
         )
+    if not ('entry_id' in request.form):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No entry_id given'
+        )
+    entryID = request.form['entry_id']
     if not entryID.isdigit():
         return jsonify(
             key=ERROR_KEY,
@@ -335,7 +389,7 @@ def modifyEntry(entryID):
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
     command = []
-    command.append("SELECT entry_id, d_type FROM entry ")
+    command.append("SELECT entry_id FROM entry ") #command.append("SELECT entry_id, d_type FROM entry ")
     command.append("WHERE organization_id=%s AND entry_id=%s" % data)
     cur.execute(''.join(command))
     result = cur.fetchone()
@@ -344,68 +398,64 @@ def modifyEntry(entryID):
             key=ERROR_KEY,
             message="The given entry_id either does not belong to the logged in user's organization, or does not exist at all"
         )
-    tag = result[1]
+    tag = result[0]
     if(tag == 'WRK'):
-        execute = False
         command = []
+        columns = []
         command.append("UPDATE work_order SET ")
-        if 'status' in request.args:
-            if request.args['status'] != 'NULL':
-                command.append("status = '%s' " % (request.args['status'],))
+        if 'status' in request.form:
+            if request.form['status'] != 'NULL':
+                columns.append("status = '%s'" % (request.form['status'],))
             else:
-                command.append("status = NULL ")
-            execute = True
-        if 'completion_date' in request.args:
-            if request.args['completion_date'] != 'NULL':
-                command.append("completion_date = '%s' " % (request.args['completion_date'],))
+                columns.append("status = NULL")
+        if 'completion_date' in request.form:
+            if request.form['completion_date'] != 'NULL':
+                columns.append("completion_date = '%s'" % (request.form['completion_date'],))
             else:
-                command.append("completion_date = NULL ")
-            execute = True
-        if execute:
-            command.append("WHERE entry_id=%s" % entryID)
+                columns.append("completion_date = NULL")
+        if columns:
+            command.append(', '.join(columns))
+            command.append(" WHERE entry_id=%s" % entryID)
             cur.execute(''.join(command))
     elif(tag == 'PRC'):
-        execute = False
         command = []
+        columns = []
         command.append("UPDATE purchase_order SET ")
-        if 'status' in request.args:
-            if request.args['status'] != 'NULL':
-                command.append("status = '%s' " % (request.args['status'],))
+        if 'status' in request.form:
+            if request.form['status'] != 'NULL':
+                columns.append("status = '%s'" % (request.form['status'],))
             else:
-                command.append("status = NULL ")
-            execute = True
-        if 'purchase_ordercol' in request.args:
-            if request.args['status'] != 'NULL':
-                command.append("purchase_ordercol = '%s' " % (request.args['purchase_ordercol'],))
+                columns.append("status = NULL")
+        if 'purchase_ordercol' in request.form:
+            if request.form['purchase_ordercol'] != 'NULL':
+                columns.append("purchase_ordercol = '%s'" % (request.form['purchase_ordercol'],))
             else:
-                command.append("purchase_ordercol = NULL ")
-            execute = True
-        if execute:
-            command.append("WHERE entry_id=%s" % entryID)
+                columns.append("purchase_ordercol = NULL")
+        if columns:
+            command.append(', '.join(columns))
+            command.append(" WHERE entry_id=%s" % entryID)
             cur.execute(''.join(command))
-    execute = False
     command = []
+    columns = []
     command.append("UPDATE entry SET ")
-    if 'title' in request.args:
-        if request.args['title'] != 'NULL':
-            command.append("title = '%s' " % (request.args['title'],))
+    if 'title' in request.form:
+        if request.form['title'] != 'NULL':
+            columns.append("title = '%s'" % (request.form['title'],))
         else:
-            command.append("title = NULL ")
-        execute = True
-    if 'date_created' in request.args:
-        if request.args['date_created'] != 'NULL':
-            command.append("date_created = '%s' " % (request.args['date_created'],))
+            columns.append("title = NULL")
+    if 'date_created' in request.form:
+        if request.form['date_created'] != 'NULL':
+            columns.append("date_created = '%s'" % (request.form['date_created'],))
         else:
-            command.append("date_created = NULL ")
-        execute = True
-    if 'description' in request.args:
-        if request.args['description'] != 'NULL':
-            command.append("description = '%s' " % (request.args['description'],))
+            columns.append("date_created = NULL")
+    if 'description' in request.form:
+        if request.form['description'] != 'NULL':
+            columns.append("description = '%s'" % (request.form['description'],))
         else:
-            command.append("description = NULL ")
-        execute = True
-    if execute:
-        command.append("WHERE entry_id=%s" % entryID)
+            columns.append("description = NULL")
+    if columns:
+        command.append(', '.join(columns))
+        command.append(" WHERE entry_id=%s" % entryID)
         cur.execute(''.join(command))
     mysql.get_db().commit()
     cur.close()
@@ -414,8 +464,8 @@ def modifyEntry(entryID):
         entry_edited=entryID
     )
 
-@application.route("/entries/<entryID>/remove",methods=['DELETE'])
-def removeEntry(entryID):
+@application.route("/entries/remove",methods=['DELETE'])
+def removeEntry():
     if not ('user' in session):
         return jsonify(
             key=ERROR_KEY,
@@ -426,6 +476,12 @@ def removeEntry(entryID):
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
         )
+    if not ('entry_id' in request.form):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No entry_id given'
+        )
+    entryID = request.form['entry_id']
     if not entryID.isdigit():
         # The following is just for testing and should be removed in the final product
         cur = mysql.get_db().cursor()
@@ -448,7 +504,6 @@ def removeEntry(entryID):
             key=ERROR_KEY,
             message="The given entry_id was not a valid positive integer"
         )
-    
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
     command = []
@@ -483,6 +538,27 @@ def removeEntry(entryID):
         key=SUCCESS_KEY,
         removed_entry_id=entryID
     )
+
+@application.route("/testing",methods=['GET'])
+def testing():
+    html_file = open("userPage.html")
+    html = html_file.read()
+    html_file.close()
+    return html
+
+@application.route("/testingJSgetEntries",methods=['GET'])
+def testingJSgetEntries():
+    js_file = open(r"./static/js/getEntries.js").read()
+    js = js_file.read()
+    js_file.close()
+    return js
+
+@application.route("/testingCalendar", methods=['GET'])
+def testingCalendar():
+    html_file = open("quickstart.html")
+    html = html_file.read()
+    html_file.close()
+    return html
 
 #@application.route("/contacts",methods=['GET'])
 
@@ -544,4 +620,4 @@ def removeEntry(entryID):
 
 if __name__ == '__main__':
     application.debug = True
-    application.run(host='0.0.0.0', port=5000)
+    application.run(host='0.0.0.0', port=80)
