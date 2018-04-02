@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- New XML document created with EditiX XML Editor (http://www.editix.com) at Sat Feb 10 16
-:28:46 EST 2018 -->
+<!-- New XML document created with EditiX XML Editor (http://www.editix.com) at Sat Feb 10 16:28:46 EST 2018 -->
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,8 +9,7 @@
     <title>Powered by Axolotl Development</title>
     <link rel="stylesheet"
     href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstraqp.min.css">
-    <meta name="google-signin-client_id" content="430084226490-l250drphth8ar7922g60ner0d4mujg
-5o.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="430084226490-l250drphth8ar7922g60ner0d4mujg5o.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async=async defer=defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="/static/js/gSignIn.js"></script>
@@ -19,10 +17,10 @@
 
 
         /* Header #1 "EasyManage" */
-        .data{
+	.data{
 
-        display: none;
-        }
+	display: none;
+	}
 
         h1 {
         background-color: gold;
@@ -34,13 +32,13 @@
         font-size: 2.45em;
         }
 
-        .g-signin2{
-         width: 100%;
-        }
+	.g-signin2{
+	 width: 100%;
+	}	
 
-        .g-signin2 > div{
-          margin: 0 auto;
-        }
+	.g-signin2 > div{
+	  margin: 0 auto;
+	}
 
 
         /* Full-width input fields */
@@ -59,12 +57,12 @@
 
         body {
         font-family: Arial, Helvetica, sans-serif;
-        background: url(images/facility.jpg) no-repeat;
+        background: url(static/images/facility.jpg) no-repeat;
         background-size: 100% 100%;
         margin: 0;
         height: 100%;
         overflow: hidden
-        }
+	}
 
         /* Center the image*/
 
@@ -76,8 +74,8 @@
         /* Login button is in this frame*/
 
         .loginFrame {
-        padding-bottom: 6px;
-        }
+        padding-bottom: 6px;  
+	}
 
 
         img.axolotl {
@@ -86,8 +84,8 @@
         border-radius: 30%;
         padding-top: 1%;
         padding-bottom: 5%;
-
-         }
+       
+	 }
 
 
         /* Stylize all buttons */
@@ -153,28 +151,39 @@
 </head>
 <body>
 
-
+    
     <div id="loginModule" class="modal">
 
         <form class="modal-content animate">
             <div class="imgcontainer">
                 <h1>EasyManage</h1>
-                <img src="images/axolotl.jpg" alt="ax" class="axolotl" />
+                <img src="static/images/axolotl.jpg" alt="ax" class="axolotl" />
             </div>
             <div class="loginFrame">
-                 <div class="g-signin2" data-onsuccess="onSignIn"</div>
-                 <div class="data">
-                        <p>Profile Details</p>
-                        <img id="pic" class="img-circle" width="100" height="100"/>
-                        <p>Email Address</p>
-                        <p id="email" class="alert alert-danger"></p>
-                        <button onclick="signOut()" class="btn btn-danger">SignOut</button>
+            	 <div class="g-signin2" data-onsuccess="onSignIn"</div>   
+           	 <div class="data">
+			<p>Profile Details</p>
+			<img id="pic" class="img-circle" width="100" height="100"/>
+			<p>Email Address</p>
+			<p id="email" class="alert alert-danger"></p>
+			<button onclick="signOut()" class="btn btn-danger">SignOut</button>
+<!--		<script>
+			function onSignIn(googleUser) {
+  			var profile = googleUser.getBasicProfile();
+  			console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  			console.log('Name: ' + profile.getName());
+  			console.log('Image URL: ' + profile.getImageUrl());
+  			console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+			}
+		</script>
 
-                 </div>
+-->
+
+		 </div>
         </form>
     </div>
 
-
+    
 
 </body>
 </html>
