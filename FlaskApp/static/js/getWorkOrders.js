@@ -1,4 +1,5 @@
 function getWorkOrders() {
+	
     $(function()
     {
         $.getJSON("/entries/work", {},
@@ -38,10 +39,11 @@ function getWorkOrders() {
 	    var contentHeader = document.getElementById("entryHeader");
     		contentHeader.innerHTML = "Work Orders";
                           var json = data.data
+	tblbody = document.createElement("tbody");
             for(var i = 0; i < json.length; i++) {
                 var obj = json[i];
 
-                var row = table.insertRow();
+                var row = tblbody.insertRow();
                 var cell0 = row.insertCell(0);
                 var cell1 = row.insertCell(1);
                 var cell2 = row.insertCell(2);
@@ -56,7 +58,7 @@ function getWorkOrders() {
                 cell4.innerHTML =  obj[5]; //Type
                 cell5.innerHTML =  obj[3];	//description
 
-
+		table.appendChild(tblbody);
             }
 
 

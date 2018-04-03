@@ -42,6 +42,7 @@ function getGeneralInfo() {
 	var contentHeader = document.getElementById("entryHeader");
    	 contentHeader.innerHTML = "General Entries";
                       var json = data.data
+	tblbody = document.createElement("tbody");
         for(var i = 0; i < json.length; i++) {
             var obj = json[i];
 
@@ -58,7 +59,7 @@ function getGeneralInfo() {
             cell3.innerHTML =  obj[3]; //Type
             //cell4.innerHTML =  obj[3];	//description
 
-
+	table.appendChild(tblbody);
         }
 
         //panel.appendChild(table); //adds the final table to the panel body

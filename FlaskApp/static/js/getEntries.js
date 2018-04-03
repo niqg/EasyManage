@@ -34,25 +34,27 @@ function getEntries() {
         cell4.innerHTML = "<b>Description</b>";
         cell4.width = "40%"
 	var contentHeader = document.getElementById("entryHeader");
-   	 contentHeader.innerHTML = "Entries";
-                      var json = data.data
-        for(var i = 0; i < json.length; i++) {
+   	 contentHeader.innerHTML = "Entries"; 
+         var json = data.data
+	tblbody = document.createElement("tbody");
+	    for(var i = 0; i < json.length; i++) {
             var obj = json[i];
 
-            var row = table.insertRow();
+            var row = tblbody.insertRow();
             var cell0 = row.insertCell(0);
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
             var cell4 = row.insertCell(4);
+	
 
             cell0.innerHTML = obj[0];	//entry ID
             cell1.innerHTML = obj[1];	//Title
             cell2.innerHTML =  obj[2];	//date created
             cell3.innerHTML =  obj[4]; //Type
             cell4.innerHTML =  obj[3];	//description
-
-
+	
+	    table.appendChild(tblbody);
         }
 
         //panel.appendChild(table); //adds the final table to the panel body
