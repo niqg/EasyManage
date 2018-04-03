@@ -2,13 +2,12 @@
 <html lang="en">
 
 <head>
-<title>Axolotl Senior Project asdfasdfasdf</title>
+<title>Axolotl Senior Project</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://apis.google.com/js/platform.js" async=async  defer=defer></script>
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.mi
-n.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="/static/js/gSignOut.js"></script>
 <script src="/static/js/jQuery.js"></script>
@@ -16,14 +15,13 @@ n.css">
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       
-      <script async defer src="https://apis.google.com/js/api.js"
+     <!-- <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};handleClientLoad()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()">
-    </script>
+    </script> -->
 
   <script src="/static/js/addNewEntry.js"></script>
   <script src="/static/js/getEntries.js"></script>
-  <script>getEntries();</script>
   <script src="/static/js/getWorkOrders.js"></script>
   <script src="/static/js/getPurchaseOrders.js"></script>
   <script src="/static/js/getContacts.js"></script>
@@ -32,7 +30,17 @@ n.css">
   <script src="/static/js/getTutorials.js"></script>
   <script src="/static/js/getSettings.js"></script>
   <script src="/static/js/postEntry.js"></script>
-  <script src=" /static/js/deleteEntry.js"></script>
+  <script src="/static/js/deleteEntry.js"></script>
+  <script src="/static/js/putEntry.js"></script> 
+
+  <script>getEntries();</script>
+  
+  <script src="/static/js/tableClick.js"></script> 
+  <script src="/static/js/closeModal.js"></script> 
+  <script src="/static/js/populateEntriesModalData.js"></script>
+  <script src="/static/js/populateWorkOrdersModalData.js"></script>
+  <script src="/static/js/populatePurchaseOrdersModalData.js"></script>
+  <script src="/static/js/populateGeneralOrdersModalData.js"></script> 
 
 
   <style>
@@ -93,7 +101,7 @@ n.css">
   </div>
 
   <div class="container" style="position: absolute;left:70px">
-    <h3>EasyManage Prototype</h3>
+    <h3>EasyManage</h3>
     <p>powered by Rowan Axolotls</p>
     <div class="panel-group">
       <div class="row equal-height-panels">
@@ -105,19 +113,14 @@ n.css">
               <div class="row">
                 <div class='wrapper text-center'>
                   <div class="btn-group-vertical">
-                    <button type="button" id="entriesButton" class="btn btn-primary" onclick=
-"getEntries()">Entries</button>
-
+                    <button type="button" id="entriesButton" class="btn btn-primary" onclick="getEntries()">Entries</button>
                     <button type="button" id="workOrderbutton" class="btn btn-primary" onclick="getWorkOrders()">Work Orders</button>
                     <button type="button" id="purchaaseButton" class="btn btn-primary" onclick="getPurchaseOrders()">Purchase Order</button>
-					<button type="button" id="generalInfoButton" class="btn btn-primary" onclick="getGeneralInfo()">General Entries</button>
-                    <button type="button" id="contactButton" class="btn btn-primary" onclick=
-"getContacts()">Contacts</button>
+		    <button type="button" id="generalInfoButton" class="btn btn-primary" onclick="getGeneralInfo()">General Entries</button>
+                    <button type="button" id="contactButton" class="btn btn-primary" onclick="getContacts()">Contacts</button>
                     <button type="button" id="calendarButton" class="btn btn-primary" onclick="getCalendar()">Calendar</button>
-                    <button type="button" id="tutorialButton" class="btn btn-primary" onclick
-="getTutorials()">Tutorials</button>
-                    <button type="button" id="settingButton" class="btn btn-primary" onclick=
-"getSettings()">Settings</button>
+                    <button type="button" id="tutorialButton" class="btn btn-primary" onclick="getTutorials()">Tutorials</button>
+                    <button type="button" id="settingButton" class="btn btn-primary" onclick="getSettings()">Settings</button>
                   </div>
                 </div>
               </div>
@@ -128,11 +131,32 @@ n.css">
           <div class="panel panel-default" style="width: 1000px;">
             <div class="panel-heading" id="panelHeader">Content Window</div>
             <div id ="panelBody" class="panel-body fixed-panel" style="overflow: auto; max-height: 500px; position: top;left:10px;right: 15px;">
-                        <h3 id="entryHeader"> Entries </h3>
+                        <label id="entryHeader"></label>
                         
-                <table id="tableid" class="table table-striped table-bordered" cellspacing="0
-" width="100%">
-                
+                <table id="tableid" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%" >
+				<!--	<thead>
+					<td>Entry ID</td>
+					<td>Title</td>
+					<td>Date Created</td>
+					<td>Type</td>
+					<td>Description</td>
+					</thead>
+					
+					<tbody
+					
+					<tr>
+					<td>102</td>
+					<td>Clean Toilets</td>
+					<td>2010-10-10</td>
+					<td>WRK</td>
+					<td>The toilets needs a good scrubing</td>
+					
+					</tr>
+					
+					
+					
+					</tbody>
+                -->
               </table>
             </div>
           </div>
@@ -146,8 +170,8 @@ n.css">
           <!--<button type="button" href="https://google.com" class="btn btn-primary" style="
 float: right;">Create Entry</button>-->
           <div class="button group" style="float: right;">
-            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target
-="#createEntryModal">Create Entry</button>
+            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#createEntryModal">Create Entry</button>
+          
           </div>
           <!-- Modal -->
           <div class="modal" id="createEntryModal" role="dialog">
@@ -161,8 +185,7 @@ float: right;">Create Entry</button>-->
                   <form>
                     <div class="block">
                       <label for="entryTitle">Title</label>
-                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset
-">
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
                         <input type="text" name="title" id="createEntryTitle" placeholder="title" ;="">
                       </div>
                     </div>
@@ -178,23 +201,73 @@ float: right;">Create Entry</button>-->
                     </div>
                     <div class="block">
                       <label>Description</label>
-                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset
-">
-                        <textarea class="form-control" id="createEntryDescription" rows="5" placeholder=
-"Write description here" required></textarea>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                        <textarea class="form-control" id="createEntryDescription" rows="5" placeholder="Write description here" required></textarea>
                       </div>
                     </div>
                   </form>
                 </div>
                 <div class="modal-footer">
                   <div class="button group" style="float: right;">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closeModal()">Close</button>
                     <button type="button" class="btn btn-default" onclick="postEntry()">Create</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <!--Modify Entry Modal-->
+          <div class="modal" id="modifyEntryModal" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" style="text-align: center;">Modify Entry</h4>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    <div class="block">
+                      <label for="modifyEntryID">Entry ID</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                        <input type="text" name="title" id="modifyEntryID" placeholder="Entry ID" ;="" disabled>
+                      </div>
+                    </div>
+					<div class="block">
+                      <label>Date Created</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                        <input type="text" id="modifyEntryDate";="" disabled>
+                      </div>
+                    </div>
+					<div class="block">
+                      <label>Type</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                        <input type="text" id="modifyEntryType";="" disabled>
+                      </div>
+                    </div>
+                    <div class="block">
+                      <label for="modifyEntryTitle">Title</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                        <input type="text" name="title" id="modifyEntryTitle" placeholder="Title" ;="">
+                      </div>
+                    </div>
+                    <div class="block">
+                      <label>Description</label>
+                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+                        <textarea class="form-control" id="modifyEntryDescription" rows="5" placeholder="Write description here" required></textarea>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <div class="button group">
+					<button style="float: left;" type="button" class="btn btn-default" data-dismiss="modal" onclick="deleteEntry()">Delete Entry</button>
+                    <button style="float: right;" type="button" class="btn btn-default" data-dismiss="modal" onclick="closeModal()">Close</button>
+                    <button style="float: right;" type="button" class="btn btn-default" data-dismiss="modal" onclick="putEntry()">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -208,36 +281,8 @@ float: right;">Create Entry</button>-->
 
       <div class="col-sm-10" style="float: right">
         <div class="btn-toolbar" style="padding-top: 10px;">
-          <div class="button group" style="float: right;">
-            <button type="button" class="btn btn-info btn-lg" data-toggle="deleteModal" data-target="#deleteEntryModal">Delete Entry</button>
-          </div>
-          <!-- Modal -->
-          <div class="deleteModal" id="deleteEntryModal" role="dialog">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 class="modal-title" style="text-align: center;">Delete Entry</h4>
-                </div>
-                <div class="modal-body">
-                  <form>
-                    <div class="block">
-                      <label for="entryTitle">Enter Entry ID:</label>
-                      <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
-                        <input type="text" name="deleteId" id="deleteid" placeholder="Entry ID" ;="">
-                      </div>
-                    </div>  
-                  </form>
-                </div>
-                <div class="modal-footer">
-                  <div class="button group" style="float: right;">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-default" onclick="deleteEntry()">Delete</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
+         
         </div>
 
       </div>
@@ -247,6 +292,13 @@ float: right;">Create Entry</button>-->
 
   </div>
     <script src="static/js/matchHeight.js"></script>
+   
+   <!-- script calls when a table row is clicked -->
+   <script>
+   $('table').click(function(){
+	tableClick();
+	});
+	</script>
 
 
 
