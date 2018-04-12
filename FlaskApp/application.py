@@ -15,9 +15,56 @@ mysql.init_app(application)
 application.secret_key = '8X2g= k9Q-2hsT6*M4#sT/f2!'
 #session = {} #For cookieless testing
 
+#Permissions Bits
+ENTRY_READ = 0
+ENTRY_WRITE = 1
+ENTRY_REMOVE = 2
+CONTACT_READ = 3
+CONTACT_WRITE = 4
+CONTACT_REMOVE = 5
+PERSONNEL_READ = 6
+PERSONNEL_WRITE = 7
+PERSONNEL_REMOVE = 8
+PERMISSION_WRITE = 9
+FULL_PERMISSIONS = 0b1111111111
+
+def checkPermission(userPerm, permLevel):
+    return (userPerm >> permLevel) % 2
+ 
+def addPermission(userPerm, permLevel):
+    if checkPermission(userPerm, permLevel):
+        return userPerm
+    return userPerm + (1 << permLevel)
+
+def removePermission(userPerm, permLevel):
+    if not checkPermission(userPerm, permLevel):
+        return userPerm
+    return userPerm - (1 << permLevel)
+
 def clearSession():
     session.pop('user', None)
     session.pop('org', None)
+    session.pop('perm', None)
+
+#checks to see if user exists
+#if they do, return the user id, 
+#if not, return none
+def checkToSeeIfUserExists(username):
+    cur = mysql.get_db().cursor()
+
+    command = []
+    command.append("SELECT user_id FROM user ")
+    command.append("WHERE username='%s'" % (username,))
+
+    cur.execute(''.join(command))
+
+    #returns the user id or None if not in table. None interpreted as false, userid interpreted as true
+    #if needed.
+    theUserId = cur.fetchone()
+    cur.close()
+    return theUserId
+
+
 
 @application.route("/")
 @application.route("/home")
@@ -57,29 +104,33 @@ def login():
     tag = fetched[0]
     if(tag == 'ORG'):
         command = []
-        command.append("SELECT user.user_id, organization.organization_id FROM user ")
+        command.append("SELECT user.user_id, user.access, organization.organization_id FROM user ")
         command.append("INNER JOIN organization ON user.user_id = organization.user_id ")
         command.append("WHERE google_client_id='%s'" % data)
         cur.execute(''.join(command))
         fetched = cur.fetchone()
         session['user'] = fetched[0]
-        session['org'] = fetched[1]
+        session['perm'] = fetched[1]
+        session['org'] = fetched[2]
     elif(tag == 'EMP'):
         command = []
-        command.append("SELECT user.user_id, employee.organization_id FROM ((user ")
+        command.append("SELECT user.user_id, user.access, employee.organization_id FROM ((user ")
         command.append("INNER JOIN employee_user ON user.user_id = employee_user.user_id) ")
         command.append("INNER JOIN employee ON employee_user.employee_id = employee.employee_id) ")
         command.append("WHERE google_client_id='%s'" % data)
         cur.execute(''.join(command))
         fetched = cur.fetchone()
         session['user'] = fetched[0]
-        session['org'] = fetched[1]
+        session['perm'] = fetched[1]
+        session['org'] = fetched[2]
     elif(tag == 'CON'):
         command = []
-        command.append("SELECT user_id FROM user ")
+        command.append("SELECT user_id, access FROM user ")
         command.append("WHERE google_client_id='%s'" % data)
         cur.execute(''.join(command))
-        session['user'] = cur.fetchone()[0]
+        fetched = cur.fetchone()
+        session['user'] = fetched[0]
+        session['perm'] = fetched[1]
     cur.close()
     return jsonify(
         key=SUCCESS_KEY,
@@ -109,9 +160,14 @@ def getAllEntries():
             message=['No user is logged in']
         )
     if not ('org' in session):
-       return jsonify(
+        return jsonify(
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
+        )
+    if not checkPermission(session['perm'], ENTRY_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
         )
     cur = mysql.get_db().cursor()
     data = (session['org'],)
@@ -147,6 +203,11 @@ def addNewEntry():
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
        )
+    if not checkPermission(session['perm'], ENTRY_WRITE):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
     argsPresent = ['employee_id', 'organization_id']
     valuesPresent = [str(session['user']), str(session['org'])]
     if (request.form.get('title', 'NULL') != 'NULL'):
@@ -214,6 +275,11 @@ def getAllGenericEntries():
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
         )
+    if not checkPermission(session['perm'], ENTRY_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
     cur = mysql.get_db().cursor()
     data = (session['org'],)
     command = []
@@ -247,6 +313,11 @@ def getAllWorkOrders():
        return jsonify(
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
+        )
+    if not checkPermission(session['perm'], ENTRY_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
         )
     cur = mysql.get_db().cursor()
     data = (session['org'],)
@@ -282,6 +353,11 @@ def getAllPurchaseOrders():
        return jsonify(
             key=ERROR_KEY,
             message='User logged in is not an employee or organization'
+        )
+    if not checkPermission(session['perm'], ENTRY_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
         )
     cur = mysql.get_db().cursor()
     data = (session['org'],)
@@ -328,6 +404,11 @@ def showOneEntry():
         return jsonify(
             key=ERROR_KEY,
             message='The given entry_id was not a valid positive integer'
+        )
+    if not checkPermission(session['perm'], ENTRY_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
         )
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
@@ -385,6 +466,11 @@ def modifyEntry():
         return jsonify(
             key=ERROR_KEY,
             message="The given entry_id was not a valid positive integer"
+        )
+    if not checkPermission(session['perm'], ENTRY_WRITE):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
         )
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
@@ -504,6 +590,11 @@ def removeEntry():
             key=ERROR_KEY,
             message="The given entry_id was not a valid positive integer"
         )
+    if not checkPermission(session['perm'], ENTRY_REMOVE):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
     cur = mysql.get_db().cursor()
     data = (session['org'], entryID)
     command = []
@@ -553,28 +644,257 @@ def testingJSgetEntries():
     js_file.close()
     return js
 
-@application.route("/testingCalendar", methods=['GET'])
-def testingCalendar():
-    html_file = open("quickstart.html")
-    html = html_file.read()
-    html_file.close()
-    return html
+#@application.route("/testingCalendar", methods=['GET'])
+#def testingCalendar():
+#    html_file = open("quickstart.html")
+#    html = html_file.read()
+#    html_file.close()
+#    return html
 
-#@application.route("/contacts",methods=['GET'])
+@application.route("/contacts",methods=['GET'])
+def getContacts():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+    )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    if not checkPermission(session['perm'], CONTACT_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'],)
+    command = []
+    command.append("SELECT name, company_name, d_type FROM contact ")
+    command.append("WHERE organization_id=%s" % data)
+    filter = request.args.get('filter', '')
+    if filter != '':
+        command.append(" AND title LIKE '%%%s%%'" % (filter,))
+    cur.execute(''.join(command))
+    result = cur.fetchall()
+    cur.close()
+    if not result:
+        return jsonify(
+            key=WARNING_KEY,
+            data=[],
+            message='No contacts were found'
+        )
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
-#@application.route("/contacts/new",methods=['POST'])
+@application.route("/testingSignUpPage.html")
+def signUpPage():
+    html = open("/var/www/html/signUpPage.html")
+    html_text = html.read()
+    html.close()
+    return html_text
 
-#@application.route("/contacts/search?=<filter>",methods=['GET'])
+@application.route("/contacts/new",methods=['POST'])
+def addNewContact():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+       )
+    if not checkPermission(session['perm'], CONTACT_WRITE):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    argsPresent = ['organization_id']
+    valuesPresent = [str(session['org'])]
+    if (request.form.get('name', 'NULL') != 'NULL'):
+        argsPresent.append("name")
+        valuesPresent.append(''.join(["'", request.form['name'], "'"]))
+    if (request.form.get('company_name', 'NULL') != 'NULL'):
+        argsPresent.append("company_name")
+        valuesPresent.append(''.join(["'", request.form['company_name'], "'"]))
+    contactType = None
+    if (request.form.get('contact_type', 'NULL') != 'NULL'):
+        argsPresent.append("d_type")
+        valuesPresent.append(''.join(["'", request.form['contact_type'], "'"]))
+        contactType = request.form['contact_type']
+    cur = mysql.get_db().cursor()
+    command = []
+    command.append("INSERT INTO contact (%s) " % (', '.join(argsPresent),))
+    command.append("VALUES (%s)" % (', '.join(valuesPresent),))
+    cur.execute(''.join(command))
+    contactID = cur.lastrowid
+    if(contactType == 'SPP'):
+        command = []
+        command.append("INSERT INTO supplier (contact_id) ")
+        command.append("VALUES (%s)" % (contactID,))
+        cur.execute(''.join(command))
+    if(contactType == 'CNT'):
+        command = []
+        command.append("INSERT INTO contractor (contact_id) ")
+        command.append("VALUES (%s)" % (contactID,))
+        cur.execute(''.join(command))
+    mysql.get_db().commit()
+    cur.close()
+    return jsonify(
+        key=SUCCESS_KEY,
+        new_contact_id=contactID
+    )
 
-#@application.route("/contacts/supplier",methods=['GET'])
+@application.route("/contacts/supplier",methods=['GET'])
+def getAllSupliers():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    if not checkPermission(session['perm'], CONTACT_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'],)
+    command = []
+    command.append("SELECT name, company_name FROM contact ")
+    command.append("WHERE organization_id=%s AND d_type='SPP'" % data)
+    filter = request.args.get('filter', '')
+    if filter != '':
+        command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
+    cur.execute(''.join(command))
+    result = cur.fetchall()
+    cur.close()
+    if not result:
+        return jsonify(
+            key=WARNING_KEY,
+            data=[],
+            message='No supliers were found'
+        )
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
-#@application.route("/contacts/supplier/search?=<filter>",methods=['GET'])
+@application.route("/contacts/contractor",methods=['GET'])
+def getAllContractors():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    if not checkPermission(session['perm'], CONTACT_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'],)
+    command = []
+    command.append("SELECT name, company_name FROM contact ")
+    command.append("WHERE organization_id=%s AND d_type='CNT'" % data)
+    filter = request.args.get('filter', '')
+    if filter != '':
+        command.append(" AND entry.title LIKE '%%%s%%'" % (filter,))
+    cur.execute(''.join(command))
+    result = cur.fetchall()
+    cur.close()
+    if not result:
+        return jsonify(
+            key=WARNING_KEY,
+            data=[],
+            message='No contractors were found'
+        )
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
-#@application.route("/contacts/contractor",methods=['GET'])
-
-#@application.route("/contacts/contractor/search?=<filter>",methods=['GET'])
-
-#@application.route("/contacts/<contactID>",methods=['GET'])
+@application.route("/contacts/view",methods=['GET'])
+def showOneContact():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    if not ('contact_id' in request.args):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No entry_id given'
+        )
+    contactID = request.args['contact_id']
+    if not contactID.isdigit():
+        return jsonify(
+            key=ERROR_KEY,
+            message='The given entry_id was not a valid positive integer'
+        )
+    if not checkPermission(session['perm'], CONTACT_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'], contactID)
+    command = []
+    command.append("SELECT name, company_name FROM contact ")
+    command.append("WHERE organization_id=%s AND contact_id=%s" % data)
+    cur.execute(''.join(command))
+    result = {info : cur.fetchone()}
+    if not result['info']:
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given contact_id either does not belong to the logged in user's organization, or does not exist at all"
+        )
+    data = (contactID,)
+    command = []
+    command.append("SELECT email.email, contact_email.priority FROM email ")
+    command.append("INNER JOIN contact_email ON email.email_id = contact_email.email_id ")
+    command.append("WHERE contact_email.contact_id=%s" % data)
+    cur.execute(''.join(command))
+    result['email'] = cur.fetchall()
+    command = []
+    command.append("SELECT phone_number.phone_number, phone_number.type, contact_phone_number.priority FROM phone_number ")
+    command.append("INNER JOIN contact_phone_number ON phone_number.phone_number_id = contact_phone_number.phone_number_id ")
+    command.append("WHERE contact_phone_number.contact_id=%s" % data)
+    cur.execute(''.join(command))
+    result['phone'] = cur.fetchall()
+    command = []
+    command.append("SELECT address.address, address.zipcode, address.city, contact_address.priority FROM address ")
+    command.append("INNER JOIN contact_address ON address.address_id = contact_address.address_id ")
+    command.append("WHERE contact_address.contact_id=%s" % data)
+    cur.execute(''.join(command))
+    result['address'] = cur.fetchall()
+    cur.close()
+    return jsonify(
+        key=SUCCESS_KEY,
+        info=result['info'],
+        emails=result['email'],
+        phone_numbers=result['phone'],
+        addresses=result['address']
+    )
 
 #@application.route("/contacts/<contactID>/modify",methods=['PUT'])
 
@@ -598,6 +918,47 @@ def testingCalendar():
 
 #@application.route("/account",methods=['GET'])
 
+@application.route("/account/new", methods=['POST'])
+def addNewUser():
+    email = request.form.get("userEmail")
+    userExists = checkToSeeIfUserExists(email)
+
+    if(userExists):
+        return jsonify(
+            key=ERROR_KEY,
+            message='That user already exists'
+        )
+    if(request.form.get("userType") == "ORG"):
+        access = FULL_PERMISSIONS
+    else:
+        access = 0
+
+    #else:
+    cur = mysql.get_db().cursor()
+    command = []
+    command.append("INSERT INTO user (username, access) ")
+    command.append("VALUES('%s', %s) " % (username, access))
+    #command.append("WHERE organization_id=%s" % data)
+    cur.execute(''.join(command))
+
+    theID = cur.lastrowid
+
+    command = []
+    command.append("INSERT INTO organization(user_id, organization_name) ")
+    command.append("VALUES(%s,'%s' ) " % (theID, username,))
+
+    cur.execute(''.join(command))
+    cur.close()
+
+    #cur = mysql.get_db().cursor()
+    #command = []
+    #command.append("INSERT INTO entry (%s) " % (', '.join(argsPresent),))
+    #command.append("VALUES (%s)" % (', '.join(valuesPresent),))
+    #cur.execute(''.join(command))
+    return jsonify(
+        key=SUCCESS_KEY,
+        message='User Successfully added to the database')
+
 #@application.route("/account/settings",mentods=['GET'])
 
 #@application.route("/account/settings/modify",methods=['PUT'])
@@ -605,6 +966,24 @@ def testingCalendar():
 #@application.route("/account/personnel",methods=['GET']) #Should only work for organization accounts
 
 #@application.route("/account/personnel/new",methods=['POST'])
+
+#For security purposes, this should not exist or at least never do what it does now and I will ultimatly be removing it
+@application.route("/users/get", methods=['GET'])
+def getUser():
+    email = request.args.get("userEmail")
+    print email
+    userExists = checkToSeeIfUserExists(email)
+
+    if(userExists):
+        return jsonify(
+            key=SUCCESS_KEY,
+            exists="yes",
+            message='User Exists')
+    else:
+        return jsonify(
+            key=ERROR_KEY,
+            exists="no",
+            message='User Does Not Exist')
 
 #@application.route("/account/personnel/search?=<filter>",methods=['GET'])
 
@@ -621,3 +1000,4 @@ def testingCalendar():
 if __name__ == '__main__':
     application.debug = True
     application.run(host='0.0.0.0', port=80)
+
