@@ -85,7 +85,7 @@ function getSettings() {
     buttonArea.appendChild(submitNewUserButton);
     
     	$.ajax({
-	      url: '/users',
+	      url: '/account/personnel/permissions',
         type: 'GET',
 	      data: {},
         success: function(data) {
@@ -155,7 +155,7 @@ function submitUser(event)
     }
     
     //appendToTable(firstNameTextArea.value, lastNameTextArea.value,jobTitleTextArea.value, emailTextArea.value);
-    $.ajax({url:"/users/new", type: "POST", data: {userEmail:email, userType:"EMP", fName:firstName, lName:lastName, title:jobTitle}, success: function(data) {}});    
+    $.ajax({url:"/account/new", type: "POST", data: {userEmail:email, userType:"EMP", fName:firstName, lName:lastName, title:jobTitle}, success: function(data) {}});    
     
     getSettings();
     
