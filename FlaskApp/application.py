@@ -45,6 +45,25 @@ def clearSession():
     session.pop('user', None)
     session.pop('org', None)
     session.pop('perm', None)
+    
+#returns the organization based upon a given email
+def getOrganization(email):
+    print email
+    cur = mysql.get_db().cursor()
+    
+    command = []
+    command.append("SELECT organization_id FROM user ")
+    command.append("JOIN employee_user using(user_id) ")
+    command.append("JOIN employee using(employee_id) ")
+    command.append("WHERE username = '%s';" % (email,))
+    
+    cur.execute(''.join(command))
+    
+    theOrgId = cur.fetchone()
+    cur.close()
+    return theOrgId
+    
+    
 
 #checks to see if user exists
 #if they do, return the user id, 
@@ -69,8 +88,11 @@ def checkToSeeIfUserExists(username):
 @application.route("/")
 @application.route("/home")
 def home():
+#    if 'user' in session:
     return render_template('userPage.html')
-
+#    else:
+#        return index()
+        
 @application.route("/index")
 def index():
     return render_template('index.html')
@@ -132,6 +154,7 @@ def login():
         session['user'] = fetched[0]
         session['perm'] = fetched[1]
     cur.close()
+    session['user_name'] = request.form.get("email")
     return jsonify(
         key=SUCCESS_KEY,
         user_type=tag,
@@ -916,38 +939,97 @@ def showOneContact():
 
 #@application.route("/help/<tutorialID>",methods=['GET'])
 
-#@application.route("/account",methods=['GET'])
+#Used to get all users of an organization
+#does not return the ORG account
+#does not return the account of whoever called it. 
+@application.route("/users",methods=['GET'])
+def getAllUserEmployees():
+    #TODO do some error checking
+    
+    current_user = session["user_name"]
+    orgID = getOrganization(current_user)
+    print orgID
+    orgID = orgID[0]
+    
+    
+    cur = mysql.get_db().cursor()
+    
+    command = []
+    command.append("SELECT e.first_name, e.last_name, e.position, u.username, u.access  ")
+    command.append("FROM employee e ")
+    command.append("JOIN employee_user USING (employee_id) ")
+    command.append("JOIN user u USING (user_id) ")
+    command.append("WHERE ((e.organization_id = %s ) " % (orgID,)) 
+    command.append("AND (u.d_type = 'EMP') ")
+    command.append("AND NOT (u.username = '%s' ));" % (current_user,))#<> is not equal to
+    
+    
+    cur.execute(''.join(command))
+    result = cur.fetchall()
+    cur.close()
+    
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
-@application.route("/account/new", methods=['POST'])
+@application.route("/users/new", methods=['POST'])
 def addNewUser():
     email = request.form.get("userEmail")
     userExists = checkToSeeIfUserExists(email)
+
 
     if(userExists):
         return jsonify(
             key=ERROR_KEY,
             message='That user already exists'
         )
-    if(request.form.get("userType") == "ORG"):
+    user_type = request.form.get("userType")
+    if(user_type == "ORG"):
         access = FULL_PERMISSIONS
     else:
         access = 0
 
+
     #else:
     cur = mysql.get_db().cursor()
+    data = (email, access, user_type)
     command = []
-    command.append("INSERT INTO user (username, access) ")
-    command.append("VALUES('%s', %s) " % (username, access))
+    command.append("INSERT INTO user (username, access, d_type) ")
+    command.append("VALUES('%s', %s, '%s')" % data)
     #command.append("WHERE organization_id=%s" % data)
     cur.execute(''.join(command))
 
-    theID = cur.lastrowid
-
-    command = []
-    command.append("INSERT INTO organization(user_id, organization_name) ")
-    command.append("VALUES(%s,'%s' ) " % (theID, username,))
-
-    cur.execute(''.join(command))
+    userID = cur.lastrowid
+    
+    if(user_type == "ORG"):
+        data = (userID, request.form['org_name'])
+        command = []
+        command.append("INSERT INTO organization (user_id, organization_name) ")
+        command.append("VALUES (%s, '%s')" % data)
+        cur.execute(''.join(command))
+    elif(user_type == 'EMP'):
+        creator_email = session["user_name"]#request.form.get("creatorEmail")#We have their email connected to an org somewhere in the db
+        first_name = request.form.get("fName")
+        last_name = request.form.get("lName")
+        title = request.form.get("title")
+        #empEmail = request.form.get("empEmail")
+        orgID = getOrganization(creator_email)
+        orgID = orgID[0]
+  
+        command = []
+        command.append("INSERT INTO employee (organization_id, first_name, last_name, position) ")
+        command.append("VALUES (%s, '%s', '%s', '%s');" % (orgID, first_name, last_name, title))
+        cur.execute(''.join(command))
+        
+        employee_id = cur.lastrowid
+        
+        data = (userID, employee_id)
+        command = []
+        command.append("INSERT INTO employee_user (user_id, employee_id) ")
+        command.append("VALUES (%s, %s)" % data)
+        cur.execute(''.join(command))
+    mysql.get_db().commit()
     cur.close()
 
     #cur = mysql.get_db().cursor()
@@ -959,19 +1041,18 @@ def addNewUser():
         key=SUCCESS_KEY,
         message='User Successfully added to the database')
 
-#@application.route("/account/settings",mentods=['GET'])
+#@application.route("/users/settings",mentods=['GET'])
 
-#@application.route("/account/settings/modify",methods=['PUT'])
+#@application.route("/users/settings/modify",methods=['PUT'])
 
-#@application.route("/account/personnel",methods=['GET']) #Should only work for organization accounts
+#@application.route("/users/personnel",methods=['GET']) #Should only work for organization accounts
 
-#@application.route("/account/personnel/new",methods=['POST'])
+#@application.route("/users/personnel/new",methods=['POST'])
 
 #For security purposes, this should not exist or at least never do what it does now and I will ultimatly be removing it
 @application.route("/users/get", methods=['GET'])
 def getUser():
     email = request.args.get("userEmail")
-    print email
     userExists = checkToSeeIfUserExists(email)
 
     if(userExists):
@@ -985,17 +1066,47 @@ def getUser():
             exists="no",
             message='User Does Not Exist')
 
-#@application.route("/account/personnel/search?=<filter>",methods=['GET'])
+#@application.route("/users/personnel/search?=<filter>",methods=['GET'])
 
-#@application.route("/account/personnel/<employeeID>",methods=['GET'])
+#@application.route("/users/personnel/<employeeID>",methods=['GET'])
 
-#@application.route("/account/personnel/<employeeID>/modify",methods=['PUT'])
+#@application.route("/users/personnel/<employeeID>/modify",methods=['PUT'])
 
-#@application.route("/account/personnel/<employeeID>/remove",methods=['DELETE'])
+#@application.route("/users/personnel/<employeeID>/remove",methods=['DELETE'])
 
-#@application.route("/account/personnel/<employeeID>/permissions",methods=['GET']) #Should only work if employeeID is an employee user
+#@application.route("/users/personnel/<employeeID>/permissions",methods=['GET']) #Should only work if employeeID is an employee user
+def getPermissions():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+    )
+    if not ('org' in session):
+       return jsonify(
+            key = request.args.get("userEmail"),
+            message='User logged in is not an employee or organization'
+        )
+    if not checkPermission(session['perm'], CONTACT_READ):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    email = request.args.get("userEmail")
+    cur = mysql.get_db().cursor()
+    data = (session['org'],)
+    command = []
+    command.append("SELECT access FROM user")
+    command.append("WHERE username = %s",email)
+    cur.execute(''.join(command))
+    result = cur.fetchall()
+    cur.close()
+    
+    return jsonify(
+        key=SUCCESS_KEY,
+        data=result
+    )
 
-#@application.route("/account/personnel/<employeeID>/permissions/modify",methods=['PUT'])
+#@application.route("/users/personnel/<employeeID>/permissions/modify",methods=['PUT'])
 
 if __name__ == '__main__':
     application.debug = True
