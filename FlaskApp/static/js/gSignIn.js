@@ -13,17 +13,30 @@ function onSignIn(googleUser)
         //console.log(data.key);
         if(data.key == SUCCESS_KEY) //user exists
         {
-            
             var googleToken = "tempID";
             //Hijacked, LOL
-            //$.ajax({url:"/login", type: "POST", data: {google_client_id: googleToken}, success: function(data) {
+            $.ajax({url:"/login", type: "POST", data: {google_client_id: googleToken, email:theUserEmail}, success: function(data) {//This line of code
             window.location = "/home";
+            }});
         }
         else                        //prompt user to make an account
         {
-
-            var modal = document.getElementById("loginModule");
-            modal.innerhtml = "";
+            var orgName = window.prompt("What do you want to name your organization?","defaultOrgName");
+            
+            while(orgName == null || orgName == "" || orgName == "defaultOrgName")
+            {
+                orgName = window.prompt("What do you want to name your organization?","defaultOrgName");
+            }
+            
+            $.ajax({url:"/users/new", type: "POST", data: {userEmail: theUserEmail, userType:"ORG", org_Name:orgName}, success: function(data) {}});
+            
+            
+            $.ajax({url:"/login", type: "POST", data: {google_client_id: googleToken, email:theUserEmail}, success: function(data) {
+            window.location = "/home";
+            }});
+            
+            //var modal = document.getElementById("loginModule");
+            //modal.innerhtml = "";
         
         }
     }});
