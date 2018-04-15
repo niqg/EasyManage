@@ -691,6 +691,8 @@ def getContacts():
 #    html.close()
 #    return html_text
 
+
+#takes a name, company_name, and a contact_type
 @application.route("/contacts/new",methods=['POST'])
 def addNewContact():
     if not ('user' in session):
