@@ -739,6 +739,16 @@ def addNewContact():
         command.append("INSERT INTO contractor (contact_id) ")
         command.append("VALUES (%s)" % (contactID,))
         cur.execute(''.join(command))
+    if(contactType == 'BTH'):
+        command = []
+        command.append("INSERT INTO supplier (contact_id) ")
+        command.append("VALUES (%s)" % (contactID,))
+        cur.execute(''.join(command))
+        
+        command = []
+        command.append("INSERT INTO contractor (contact_id) ")
+        command.append("VALUES (%s)" % (contactID,))
+        cur.execute(''.join(command))
     mysql.get_db().commit()
     cur.close()
     return jsonify(
