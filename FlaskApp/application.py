@@ -1020,7 +1020,27 @@ def modifyContact():
             message='User does not have the permission'
         )
     #you need contactID, name, company_name, d_type for the update. 
-
+    contactID = request.form.get("contactID")
+    name = request.form.get("name")
+    companyName = request.form.get("companyName")
+    dType = request.form.get("dType")
+    
+    cur = mysql.get_db().cursor()
+    
+    command = []
+    command.append("UPDATE contact SET name = '%s', " % name)
+    command.append("company_name = '%s', " % companyName)
+    command.append("d_type = '%s' " % dType)
+    command.append("WHERE contact_id = %s;" % contactID)
+    
+    cur.execute(''.join(command))
+    
+    mysql.get_db().commit()
+    cur.close()
+    return jsonify(
+        key=SUCCESS_KEY,
+        entry_edited=contactID
+    )
 
 
     
