@@ -1007,7 +1007,7 @@ def giveContactAccessPoints():
             
     return jsonify(
         key=SUCCESS_KEY,
-        entry_edited=entryID
+        contact_edited=contactID
     )
 
 
@@ -1049,7 +1049,7 @@ def modifyContact():
     cur.close()
     return jsonify(
         key=SUCCESS_KEY,
-        entry_edited=contactID
+        contact_edited=contactID
     )
     
 @application.route("/contacts/<contactID>/remove",methods=['DELETE'])
