@@ -1028,10 +1028,10 @@ def modifyContact():
     cur = mysql.get_db().cursor()
     
     command = []
-    command.append("UPDATE contact SET name = '%s', " % name)
-    command.append("company_name = '%s', " % companyName)
-    command.append("d_type = '%s' " % dType)
-    command.append("WHERE contact_id = %s;" % contactID)
+    command.append("UPDATE contact SET name = '%s', " % (name,))
+    command.append("company_name = '%s', " % (companyName,))
+    command.append("d_type = '%s' " % (dType,))
+    command.append("WHERE contact_id = %s;" % (contactID,))
     
     cur.execute(''.join(command))
     
