@@ -958,7 +958,7 @@ def addAddress(contactID, address, zipcode, city, priority):
 #contactID:contact ID to have stuff added to. 
 #phoneNums and addresses are similar to emails. 
 @application.route("/contacts/modify/giveAccessPoints",methods=['PUT'])
-def modifyContact():
+def giveContactAccessPoints():
     if not ('user' in session):
         return jsonify(
             key=ERROR_KEY,
