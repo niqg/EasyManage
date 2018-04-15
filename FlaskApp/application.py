@@ -725,7 +725,7 @@ def addNewContact():
         contactType = request.form['contact_type']
     cur = mysql.get_db().cursor()
     command = []
-    command.append("INSERT INTO contact (%s) " % (', '.join(argsPresent),))
+    command.append("INSERT INTO contact (%s) " % (', '.join(argsPresent),)) 
     command.append("VALUES (%s)" % (', '.join(valuesPresent),))
     cur.execute(''.join(command))
     contactID = cur.lastrowid
@@ -1000,7 +1000,27 @@ def giveContactAccessPoints():
         entry_edited=entryID
     )
 
-#@application.route("/contacts/modify/giveAccessPoints",methods=['PUT'])
+
+
+@application.route("/contacts/modify",methods=['PUT'])
+def modifyContact():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+       )
+    if not checkPermission(session['perm'], CONTACT_WRITE):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    #you need contactID, name, company_name, d_type for the update. 
+
 
 
     
