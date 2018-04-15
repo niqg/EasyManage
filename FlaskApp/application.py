@@ -890,14 +890,66 @@ def showOneContact():
         addresses=result['address']
     )
 
-def addPhoneNumber(contactID, phoneNumber):
-    tempvar = None
+def addPhoneNumber(contactID, phoneNumber, dtype, priority):
+    cur = mysql.get_db().cursor()
+    
+    command = []
+    command.append("INSERT INTO phone_number (phone_number, type) ")
+    command.append("VALUES (%s, '%s');" % phoneNumber, dtype)
+    
+    cur.execute(''.join(command))
+    
+    phoneNumberID = cur.lastrowid
+    
+    command = []
+    command.append("INSERT INTO contact_phone_number (contact_id, phone_number_id, priority) ")
+    command.append("VALUES (%s, %s, %s);" % contactID, phoneNumberID, priority)
+    
+    cur.execute(''.join(command))
+    
+    mysql.get_db().commit()
+    cur.close()
+    
 
-def addEmail(contactID, email):
-    tempvar = None
+def addEmail(contactID, email, priority):
+    cur = mysql.get_db().cursor()
+    
+    command = []
+    command.append("INSERT INTO email (email) ")
+    command.append("VALUES ('%s');" % email)
+    
+    cur.execute(''.join(command))
+    
+    emailID = cur.lastrowid
+    
+    command = []
+    command.append("INSERT INTO contact_email (contact_id, email_id, priority) ")
+    command.append("VALUES (%s, %s, %s);" % contactID, emailID, priority)
+    
+    cur.execute(''.join(command))
+    
+    mysql.get_db().commit()
+    cur.close()
 
-def addAddress(contactID, address):
-    tempvar = None
+def addAddress(contactID, address, zipcode, city, priority):
+    cur = mysql.get_db().cursor()
+    
+    command = []
+    command.append("INSERT INTO address (address, zipcode, city) ")
+    command.append("VALUES ('%s', '%s', '%s');" % address, zipcode, city)
+    
+    cur.execute(''.join(command))
+    
+    addressID = cur.lastrowid
+    
+    command = []
+    command.append("INSERT INTO contact_email (contact_id, address_id, priority) ")
+    command.append("VALUES (%s, %s, %s);" % contactID, addressID, priority)
+    
+    cur.execute(''.join(command))
+    
+    mysql.get_db().commit()
+    cur.close()
 
 #@application.route("/contacts/<contactID>/modify",methods=['PUT'])
 
