@@ -1041,11 +1041,81 @@ def modifyContact():
         key=SUCCESS_KEY,
         entry_edited=contactID
     )
-
-
     
-    
-#@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
+@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
+def removeContact():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+        )
+    if not ('contact_id' in request.form):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No contact_id given'
+        )
+    contactID = request.form['contact_id']
+    if not contactID.isdigit():
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given contact_id was not a valid positive integer"
+        )
+    if not checkPermission(session['perm'], CONTACT_REMOVE):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    cur = mysql.get_db().cursor()
+    data = (session['org'], contactID)
+    command = []
+    command.append("SELECT contact_id, d_type FROM contact ")
+    command.append("WHERE organization_id=%s AND contact_id=%s" % data)
+    cur.execute(''.join(command))
+    result = cur.fetchone()
+    if not result:
+        return jsonify(
+            key=ERROR_KEY,
+            message="The given contact_id either does not belong to the logged in user's organization, or does not exist at all"
+        )
+    tag = result[1]
+    data = (contactID,)
+    if(tag == 'SPP'):
+        command = []
+        command.append("DELETE FROM supplier ")
+        command.append("WHERE contact_id=%s" % data)
+        cur.execute(''.join(command))
+    elif(tag == 'CNT'):
+        command = []
+        command.append("DELETE FROM contractor ")
+        command.append("WHERE contact_id=%s" % data)
+        cur.execute(''.join(command))
+    elif(tag == 'BTH'):
+        # If they're both, they're in both tables
+        command = []
+        command.append("DELETE FROM supplier ")
+        command.append("WHERE contact_id=%s" % data)
+        cur.execute(''.join(command))
+        
+        command = []
+        command.append("DELETE FROM contractor ")
+        command.append("WHERE contact_id=%s" % data)
+        cur.execute(''.join(command))
+        
+    command = []
+    command.append("DELETE FROM contact ")
+    command.append("WHERE contact_id=%s" % data)
+    cur.execute(''.join(command))
+    mysql.get_db().commit()
+    cur.close()
+    return jsonify(
+        key=SUCCESS_KEY,
+        removed_entry_id=contactID
+    )
 
 #@application.route("/about")
 
