@@ -951,7 +951,13 @@ def addAddress(contactID, address, zipcode, city, priority):
     mysql.get_db().commit()
     cur.close()
 
-@application.route("/contacts/modify",methods=['PUT'])
+
+#modifies a contact to give it access points (email, phoneNums, Addresses)
+#data from js should be in the form
+#emails:{emailString:"", email_priority:"Might be a num or string? Not sure how js works"}
+#contactID:contact ID to have stuff added to. 
+#phoneNums and addresses are similar to emails. 
+@application.route("/contacts/modify/giveAccessPoints",methods=['PUT'])
 def modifyContact():
     if not ('user' in session):
         return jsonify(
@@ -987,20 +993,14 @@ def modifyContact():
         for address in addresses:
             addAddress(contactID, address.get("address_string"), address.get("zipcode_string"), address.get("city_string"), address.get("priority_string"))
             
-    name          = request.form.get("name")
-    companyName   = request.form.get("company_name")
-    d_type        = request.form.get("contact_d_type")
-    
-    if (name is not None):
-        tempVar = None
-    
-    if (companyName is not None):
-        tempVar = None
-    
-    if (d_type is not None):    
-        tempVar = None
-    #TODO fill in if statements
-    #TODO return JSON
+    return jsonify(
+        key=SUCCESS_KEY,
+        entry_edited=entryID
+    )
+
+#@application.route("/contacts/modify/giveAccessPoints",methods=['PUT'])
+
+
     
     
 #@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
