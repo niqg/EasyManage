@@ -1089,10 +1089,25 @@ def removeContact():
         command.append("DELETE FROM supplier ")
         command.append("WHERE contact_id=%s" % data)
         cur.execute(''.join(command))
+        
+        supplierID = cur.lastrowid
+        
+        command = []
+        command.append("DELETE FROM supplier_to_type ")
+        command.append("WHERE supplier_id = %s;" % (supplierID,))
+        cur.execute(''.join(command))
+        
     elif(tag == 'CNT'):
         command = []
         command.append("DELETE FROM contractor ")
         command.append("WHERE contact_id=%s" % data)
+        cur.execute(''.join(command))
+        
+        contractorID = cur.lastrowid
+        
+        command = []
+        command.append("DELETE FROM contractor_to_type ")
+        command.append("WHERE contractor_id = %s;" % (contractorID,))
         cur.execute(''.join(command))
     elif(tag == 'BTH'):
         # If they're both, they're in both tables
@@ -1101,9 +1116,23 @@ def removeContact():
         command.append("WHERE contact_id=%s" % data)
         cur.execute(''.join(command))
         
+        supplierID = cur.lastrowid
+        
+        command = []
+        command.append("DELETE FROM supplier_to_type ")
+        command.append("WHERE supplier_id = %s;" % (supplierID,))
+        cur.execute(''.join(command))
+        
         command = []
         command.append("DELETE FROM contractor ")
         command.append("WHERE contact_id=%s" % data)
+        cur.execute(''.join(command))
+        
+        contractorID = cur.lastrowid
+        
+        command = []
+        command.append("DELETE FROM contractor_to_type ")
+        command.append("WHERE contractor_id = %s;" % (contractorID,))
         cur.execute(''.join(command))
         
     command = []
