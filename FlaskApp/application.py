@@ -951,8 +951,25 @@ def addAddress(contactID, address, zipcode, city, priority):
     mysql.get_db().commit()
     cur.close()
 
-#@application.route("/contacts/<contactID>/modify",methods=['PUT'])
-
+@application.route("/contacts/modify",methods=['PUT'])
+def modifyContact():
+    contactID = request.form.get("contactID")
+    
+    emails = request.form.get("emails")      #should return a set of dicts
+    phoneNums = request.form.get("phoneNums")#should return a set of dicts
+    addresses = request.form.get("addresses")#should return a set of dicts
+    
+    if(emails is not None):
+        for email in emails:
+            addEmail(contactID, email.get("emailString"), email.get("email_priority"))
+    
+    if(phoneNums is not None):
+        for phoneNum in phoneNums:
+            addPhoneNumber(contactID, phoneNum.get("phoneNumberString"), phoneNum.get("d_type"), phoneNum.get("phone_priority"))
+            
+    if(addresses is not None):
+        for address in addresses:
+            addAddress(contactID, address.get("address_string"), address.get("zipcode_string"), address.get("city_string"), address.get("priority_string"))
 
 
 #@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
