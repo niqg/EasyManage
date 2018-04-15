@@ -953,6 +953,22 @@ def addAddress(contactID, address, zipcode, city, priority):
 
 @application.route("/contacts/modify",methods=['PUT'])
 def modifyContact():
+    if not ('user' in session):
+        return jsonify(
+            key=ERROR_KEY,
+            message='No user is logged in'
+        )
+    if not ('org' in session):
+       return jsonify(
+            key=ERROR_KEY,
+            message='User logged in is not an employee or organization'
+       )
+    if not checkPermission(session['perm'], CONTACT_WRITE):
+        return jsonify(
+            key=ERROR_KEY,
+            message='User does not have the permission'
+        )
+    
     contactID = request.form.get("contactID")
     
     emails = request.form.get("emails")      #should return a set of dicts
