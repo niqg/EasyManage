@@ -986,8 +986,23 @@ def modifyContact():
     if(addresses is not None):
         for address in addresses:
             addAddress(contactID, address.get("address_string"), address.get("zipcode_string"), address.get("city_string"), address.get("priority_string"))
-
-
+            
+    name          = request.form.get("name")
+    companyName   = request.form.get("company_name")
+    d_type        = request.form.get("contact_d_type")
+    
+    if (name is not None):
+        tempVar = None
+    
+    if (companyName is not None):
+        tempVar = None
+    
+    if (d_type is not None):    
+        tempVar = None
+    #TODO fill in if statements
+    #TODO return JSON
+    
+    
 #@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
 
 #@application.route("/about")
@@ -1252,4 +1267,3 @@ def getAllUserEmployees():
 if __name__ == '__main__':
     application.debug = True
     application.run(host='0.0.0.0', port=80)
-
