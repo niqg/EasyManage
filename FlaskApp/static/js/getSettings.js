@@ -19,6 +19,10 @@ submitNewUserButton.onclick = submitUser;
 
 var emailToAccess = {};
 
+var settingsButton = document.getElementById("settingButton");
+settingsButton.onclick = getSettings;
+
+
 function getSettings() {
     setState("Settings");
     toggleCalendar(); 
@@ -63,6 +67,7 @@ function getSettings() {
     submitButton.className = "btn";
     submitButton.value = "Add user";
     
+    
     //add Header
     appendToTable('<b>First Name</b>', '<b>Last Name</b>','<b>Title</b>', '<b>Email</b>', '');
     
@@ -70,7 +75,7 @@ function getSettings() {
     
     //appendToTable(table, '<input type="text" id="FirstName"> </input>', lastName, '', '', '');
     var header = table.createTHead();
-    var row2 = header.insertRow(1)
+    var row2 = header.insertRow(1);
     
     var fNameArea = row2.insertCell(0);
     var lNameArea = row2.insertCell(1);
@@ -83,7 +88,6 @@ function getSettings() {
     titleArea.appendChild(jobTitleTextArea);
     emailArea.appendChild(emailTextArea);
     buttonArea.appendChild(submitNewUserButton);
-    
     	$.ajax({
 	      url: '/account/personnel/permissions',
         type: 'GET',
@@ -105,19 +109,21 @@ function getSettings() {
          for(var i = 0; i < json.length; i++) {
             var obj = json[i];
             //objects 0-4 are fname, lname, title, email, and access/permissions (in that order)
-            var row = appendToTable(obj[0], obj[1], obj[2], obj[3]);
+            var row = appendToTable(obj[2], obj[3], obj[4], obj[5]);
             
-            emailToAccess[obj[3]] = obj[4];  //create a map/dictionary from email to access ability. 
+            emailToAccess[obj[5]] = obj[6];  //create a map/dictionary from email to access ability. 
             
             row.addEventListener("click", displayAccessOptions);
             
          }
       }});
+      
      firstNameTextArea.value = "";
      lastNameTextArea.value = "";
      jobTitleTextArea.value = "";
      emailTextArea.value = ""; 
 }
+
 
 //TODO one two three and four are terrible names. refactor them. 
 function appendToTable(one, two, three, four)
@@ -155,10 +161,9 @@ function submitUser(event)
     }
     
     //appendToTable(firstNameTextArea.value, lastNameTextArea.value,jobTitleTextArea.value, emailTextArea.value);
-    $.ajax({url:"/account/new", type: "POST", data: {userEmail:email, userType:"EMP", fName:firstName, lName:lastName, title:jobTitle}, success: function(data) {}});    
+    $.ajax({url:"/account/new", type: "POST", data: {google_client_id:email, userEmail:email, userType:"EMP", fName:firstName, lName:lastName, title:jobTitle}, success: function(data) {}});    
     
     getSettings();
-    
     
 }
 
@@ -184,6 +189,47 @@ function displayAccessOptions(event)
 
     console.log(access);
   
+    var settingsModal = document.getElementById('settingsModal');
+    var closeModal = document.getElementById('closeSettingsModal');
+
+    settingsModal.style.display = "block";
+    
+    closeModal.onclick = function(){
+        settingsModal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == settingsModal) {
+            settingsModal.style.display = "none";
+        }
+    }
+    
+    populateCheckboxes(access);
+    
 }
 
+function getPermissionCheckboxes(){
+     var permCheckboxes = [];
 
+    for(var i = 1; i<=10; i++){
+        permCheckboxes.push(document.getElementById('permission' + i));
+    }
+
+    return permCheckboxes;
+}
+
+function populateCheckboxes( access){
+  
+  var permissionCheckboxes = getPermissionCheckboxes();
+    for(var i = 0; i<=9; i++){
+        if((access % 2) == 0)
+        {
+              permissionCheckboxes[i].checked = false;
+              //permissionCheckboxes[i].setAttribute("checked","false");
+        }
+        else{
+            //permissionCheckboxes[i].setAttribute("checked","true");
+                    permissionCheckboxes[i].checked = true;
+        }
+	      access = access >> 1;
+    }
+}
