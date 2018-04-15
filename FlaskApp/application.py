@@ -943,7 +943,7 @@ def addAddress(contactID, address, zipcode, city, priority):
     addressID = cur.lastrowid
     
     command = []
-    command.append("INSERT INTO contact_email (contact_id, address_id, priority) ")
+    command.append("INSERT INTO contact_address (contact_id, address_id, priority) ")
     command.append("VALUES (%s, %s, %s);" % contactID, addressID, priority)
     
     cur.execute(''.join(command))
