@@ -918,7 +918,7 @@ def addEmail(contactID, email, priority):
     
     command = []
     command.append("INSERT INTO email (email) ")
-    command.append("VALUES ('%s');" % email)
+    command.append("VALUES ('%s');" % (email,))
     
     cur.execute(''.join(command))
     
