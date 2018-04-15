@@ -890,7 +890,18 @@ def showOneContact():
         addresses=result['address']
     )
 
+def addPhoneNumber(contactID, phoneNumber):
+    tempvar = None
+
+def addEmail(contactID, email):
+    tempvar = None
+
+def addAddress(contactID, address):
+    tempvar = None
+
 #@application.route("/contacts/<contactID>/modify",methods=['PUT'])
+
+
 
 #@application.route("/contacts/<contactID>/remove",methods=['DELETE'])
 
