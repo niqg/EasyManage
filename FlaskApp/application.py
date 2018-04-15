@@ -949,23 +949,23 @@ def addNewUser():
         command.append("VALUES (%s, '%s')" % data)
         cur.execute(''.join(command))
     elif(user_type == 'EMP'):
-        data = (session['org'], request.form.get('employee_id'))
-        command = []
-        command.append("SELECT employee_id FROM employee ")
-        command.append("WHERE organization_id=%s AND employee_id=%s" % (data))
-        cur.execute(''.join(command))
-        if not cur.fetchone():
-            return jsonify(
-            key=ERROR_KEY,
-            message='Employee either does not exist or does not belong to the organization'
-        )
+#        data = (session['org'], request.form.get('employee_id'))
+#        command = []
+#        command.append("SELECT employee_id FROM employee ")
+#        command.append("WHERE organization_id=%s AND employee_id=%s" % (data))
+#        cur.execute(''.join(command))
+#        if not cur.fetchone():
+#            return jsonify(
+#            key=ERROR_KEY,
+#            message='Employee either does not exist or does not belong to the organization'
+#        )
         data = (session['org'], request.form.get("fName"), request.form.get("lName"), request.form.get("title"))
         command = []
         command.append("INSERT INTO employee (organization_id, first_name, last_name, position) ")
         command.append("VALUES (%s, '%s', '%s', '%s')" % (data))
         cur.execute(''.join(command))
         employee_id = cur.lastrowid
-        data = (session['org'], employee_id)
+        data = (userID, employee_id)
         command = []
         command.append("INSERT INTO employee_user (user_id, employee_id) ")
         command.append("VALUES (%s, %s)" % data)
