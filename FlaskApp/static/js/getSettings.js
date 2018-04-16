@@ -18,6 +18,7 @@ submitNewUserButton.value = "Add User";
 submitNewUserButton.onclick = submitUser;
 
 var emailToAccess = {};
+var emailToId = {};
 
 var settingsButton = document.getElementById("settingButton");
 settingsButton.onclick = getSettings;
@@ -105,6 +106,7 @@ function getSettings() {
          var json = data.data;
          
          emailToAccess = {};
+         emailToId = {};
          
          for(var i = 0; i < json.length; i++) {
             var obj = json[i];
@@ -112,6 +114,8 @@ function getSettings() {
             var row = appendToTable(obj[2], obj[3], obj[4], obj[5]);
             
             emailToAccess[obj[5]] = obj[6];  //create a map/dictionary from email to access ability. 
+            
+            emailToId[obj[5]] = obj[0];
             
             row.addEventListener("click", displayAccessOptions);
             
@@ -179,12 +183,15 @@ function onSignIn(googleUser)
     console.log("Getting email works!")
 }
 
+var currentEmail;
+
 function displayAccessOptions(event)
 {
     var row = event.currentTarget;
     var rowArray = row.getElementsByTagName("td");
     
     var email = rowArray[3].innerText;
+    currentEmail = email;
     var access = emailToAccess[email];
 
     console.log(access);
@@ -210,7 +217,7 @@ function displayAccessOptions(event)
 function getPermissionCheckboxes(){
      var permCheckboxes = [];
 
-    for(var i = 1; i<=10; i++){
+    for(var i = 1; i<=11; i++){
         permCheckboxes.push(document.getElementById('permission' + i));
     }
 
@@ -220,7 +227,7 @@ function getPermissionCheckboxes(){
 function populateCheckboxes( access){
   
   var permissionCheckboxes = getPermissionCheckboxes();
-    for(var i = 0; i<=9; i++){
+    for(var i = 0; i<=10; i++){
         if((access % 2) == 0)
         {
               permissionCheckboxes[i].checked = false;
@@ -233,3 +240,37 @@ function populateCheckboxes( access){
 	      access = access >> 1;
     }
 }
+
+function applyPermissions()
+{
+    var access = 0;
+    var currentPermission = 1024;
+    var permissionCheckboxes = getPermissionCheckboxes();
+    for(var i = 0; i<=10; i++)
+    {
+        if(permissionCheckboxes[i].checked)//permission box is checked. 
+        {
+            access = access | currentPermission;
+        }
+        if(i != 10)
+        {
+            access = access >> 1;
+        }
+    }
+    console.log(access);
+    
+    var empId = emailToId[currentEmail];
+    console.log(empId);
+    
+    $.ajax({url:"/account/personnel/permissions/modify", type: "PUT", data: {employee_id:empId, access:access}, success: function(data) {
+    console.log(data.message);
+    console.log(data.user_edited);
+    }});
+    
+    var settingsModal = document.getElementById('settingsModal');
+    settingsModal.style.display = "none";
+    
+    emailToAccess[currentEmail] = access;
+
+}
+
