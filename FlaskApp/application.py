@@ -326,6 +326,7 @@ def viewPDF():
 
 @application.route("/entries/pdf/add",methods=['POST'])
 def addPDF():
+    print "pdf" in request.files
     if not ('user' in session):
         return jsonify(
             key=ERROR_KEY,
@@ -363,7 +364,8 @@ def addPDF():
             key=ERROR_KEY,
             message="The given entry_id either does not belong to the logged in user's organization, or does not exist at all"
         )
-    data = (entryID, request.form.get('pdf'))
+#    data = (entryID, request.form.get('pdf'))
+    data = (entryID, request.files.get('pdf'))
     command = []
     command.append("INSERT INTO pdf (entry_id, pdf) ") #command.append("SELECT entry_id, d_type FROM entry ")
     command.append("VALUES (entry_id=%s, pdf=%s)" % data)
