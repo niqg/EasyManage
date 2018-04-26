@@ -32,3 +32,25 @@ function closeCreateContactModal(){
     
 }
 
+function closeCreateEntryModal(){
+	
+	$("#createEntryModal").hide();//this doesnt work either.
+  //alert("here");
+        var modContactModal = document.getElementById("createEntryModal");
+   modContactModal.style.display = "none";
+        //mymodalBody = document.getElementById("panelBody");
+       // mymodalBody.innerHTML ="";
+
+}
+
+function closeSettingsModal(){
+
+    $("#settingsModal").hide();//this doesnt work either.
+  //alert("here");
+        var settingsModal = document.getElementById("settingsModal");
+        settingsModal.style.display = "none";
+        //mymodalBody = document.getElementById("panelBody");
+       // mymodalBody.innerHTML ="";
+
+}
+
