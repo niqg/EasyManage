@@ -28,40 +28,51 @@ function getWorkOrders() {
 
             // Insert a new cell (<td>) at the first position of the "new" <tr> element:
             var cell = row.insertCell(0);
+ 	    cell.width = "1%";
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
-            var cell4 = row.insertCell(4);
-            var cell5 = row.insertCell(5);
+           //var cell4 = row.insertCell(4);
+            var cell5 = row.insertCell(4);
 
             // Add some bold text in the new cell:
             cell.innerHTML = "<b>Entry ID</b>";
+ 	    cell.setAttribute("style", "visibility: hidden");
             cell1.innerHTML = "<b>Title</b>";
             cell2.innerHTML = "<b>Date Created</b>";
             cell3.innerHTML = "<b>Status</b>";
-            cell4.innerHTML = "<b>Date Completed</b>";
+            //cell4.innerHTML = "<b>Date Completed</b>";
             cell5.innerHTML = "<b>Description</b>";
             cell5.width = "40%"
 	    var contentHeader = document.getElementById("entryHeader");
     		contentHeader.innerHTML = "Work Orders";
                           var json = data.data
 	tblbody = document.createElement("tbody");
+		tblbody.id = "tbody";
             for(var i = 0; i < json.length; i++) {
                 var obj = json[i];
 
                 var row = tblbody.insertRow();
                 var cell0 = row.insertCell(0);
-                var cell1 = row.insertCell(1);
+		cell0.setAttribute("style", "visibility: hidden");
+                cell0.width = "1%";
+		var cell1 = row.insertCell(1);
                 var cell2 = row.insertCell(2);
                 var cell3 = row.insertCell(3);
-                var cell4 = row.insertCell(4);
-                var cell5 = row.insertCell(5);
+                //var cell4 = row.insertCell(4);
+                var cell5 = row.insertCell(4);
+
+		
 
                 cell0.innerHTML = obj[0];	//entry ID
                 cell1.innerHTML = obj[1];	//Title
                 cell2.innerHTML =  obj[2];	//date created
+		if(obj[4] != "Completed"){
+			cell3.innerHTML = "Incompleted";
+		}else{
                 cell3.innerHTML =  obj[4]; //status (completed or not)
-                cell4.innerHTML =  obj[5]; //Type
+               }
+		// cell4.innerHTML =  obj[5]; //Type
                 cell5.innerHTML =  obj[3];	//description
 
 		table.appendChild(tblbody);

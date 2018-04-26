@@ -12,8 +12,13 @@ function markComplete(){
 	type: 'PUT',
 	data: $.param(sendingData),
 	success: function(data) {
+		    if(data.key === 1){
+			displayError();
+			return;
+		    }
 	            console.log("The Mark Complete Script has finished");
-	        }   location.reload();
+		    location.reload();
+	        } 
 	    });
     
 }

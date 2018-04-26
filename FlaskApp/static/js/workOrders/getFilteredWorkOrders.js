@@ -22,7 +22,9 @@ success: function(data) {
 
             // Insert a new cell (<td>) at the first position of the "new" <tr> element:
             var cell = row.insertCell(0);
-            var cell1 = row.insertCell(1);
+	    cell.setAttribute("style", "visibility: hidden");   
+            cell.width = "1%";
+	 var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
             var cell4 = row.insertCell(4);
@@ -40,11 +42,14 @@ success: function(data) {
     		contentHeader.innerHTML = "Work Orders";
                           var json = data.data
 	tblbody = document.createElement("tbody");
+	tblbody.id = "tbody";
             for(var i = 0; i < json.length; i++) {
                 var obj = json[i];
 
                 var row = tblbody.insertRow();
                 var cell0 = row.insertCell(0);
+		cell0.setAttribute("style", "visibility: hidden");
+		cell0.width = "1%";
                 var cell1 = row.insertCell(1);
                 var cell2 = row.insertCell(2);
                 var cell3 = row.insertCell(3);
