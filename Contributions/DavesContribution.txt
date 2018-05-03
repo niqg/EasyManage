@@ -1,1 +1,14 @@
+Pre-Planning:
+  Design Document
+Backend:
+  Database Modeling/Programming/Implementation w/ Brennan Ringel & Nicholas Giordano
+Middle End:
+  Couple endpoints on application.py w/ Chris Hobson, Brennan Ringel and Eric Lynn
+  getCal.js w/ Nate DeSimone
+  getSettings.js w/ Brennan Ringel
+Front End:
+  Google Calendar widget implementation w/ Nate DeSimone
 
+  
+
+  
