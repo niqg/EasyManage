@@ -1,1 +1,16 @@
--Mastermind behind the team name "Axolotl" :)
+Front-end:
+  -Implemented "Hello, *username*" display on userPage.html with Dave Yaeger
+  -Developed the graphical interface for changing employee permissions
+  -Implemented some minimal CSS 
+  
+Middle-end:
+  -Worked on settings-related JS with Brennan 
+  -Worked on initial draft of getCal.js with Brennan and Dave
+  -Wrote the getUserName endpoint
+  -worked on the permissions-related endpoints with Dave
+  -worked on the getEntries functionality with Nate
+  
+Miscellanious:
+  -Documented most of the middle-end
+  -Made the final PowerPoint Presentation
+  -Mastermind behind the team name "Axolotl" :)
