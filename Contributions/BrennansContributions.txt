@@ -8,6 +8,8 @@ Design and prep:
   Learning everything besides MySQL and Python that I worked on was something I did. Flask, javascript, ajax, and html were rather new 
   to me.
   
+  General GitHub management to help get some code from teammates up to github for various reasons. 
+  
   General Debugging.
 
 Coding:
