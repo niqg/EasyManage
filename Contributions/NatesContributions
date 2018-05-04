@@ -1,0 +1,15 @@
+Contributions:
+  Middle and Front end Javascripts.
+  Created all the JS files to create the tables for entries, work orders, purchases orders, and general.
+  I made the files that populate the Modals for creating an entry modifying one.
+  I made the JS for deleting entries
+  I made all the files that allow the users to edit entries and send it back to the database.
+  Contacts (for creating and modifying) were done in javascript.
+  I fully implemented the search JS script that allows the database to return filtered entries or contacts.
+  I created the JS files to match the height of the Navigation Window and Content Window.
+  I helped Dave implement the google calendar (open source)
+  I made the “about us” html and linked it to our project.
+  I made the contacts and entries modal that pops up.
+  I made the permission errors appear when users try to do something they don’t have permission too.
+  I made the “states” JS that keeps track of which state the users is in.
+  I made the JS files that allow attachments to be sent to the DB and also retrieved and opened.
