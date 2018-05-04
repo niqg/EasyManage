@@ -1,3 +1,3 @@
 Due to what seems to be a change in Google's calendar api that we did not catch until recently, some of the calendar functionality does not work and was thus taken out, however, you can still navigate to a users' google calendar from our website's calendar to manage their events. 
 
-New users seem to sometimes have issues with permissions on creating their accounts, only to have it resolved after refreshing their page. This was only recently discovered and is hard to reproduce, and thus we have not had time to fix it. It's probably due to a race condition. 
+New users seem to sometimes have issues with permissions on creating their accounts, only to have it resolved after refreshing their page. This was only recently discovered and is hard to replicate, and thus we have not had time to fix it. It's probably due to a race condition. 
