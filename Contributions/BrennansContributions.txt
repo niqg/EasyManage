@@ -1,1 +1,24 @@
-Here for mine. 
+Design and prep:
+  Helped with writing the Design document. 
+
+  Database Modeling/Programming/Implementation w/ Dave Yeager & Nicholas Giordano (partly should go down 
+
+  Came up with the idea to use states, which I believe Nate implemented in JS to fix some of our problems with what tab a user is in. 
+
+  Learning everything besides MySQL and Python that I worked on was something I did. Flask, javascript, ajax, and html were rather new 
+  to me.
+  
+  General Debugging.
+
+Coding:
+
+  Wrote most of the javascript for handling adding new users (and organization users), changing their permissions, and storing them in the 
+  current session for use. I believe I also wrote some of the flask endpoints for this as well. Around this time, I also was working on 
+  helping coach a few teammates through how to work on flask and javascript by giving a few outlines of what code needed to be written, to 
+  build them up to be able to be more confident with working on it. Had some help from Eric on the HTML (and I think Dave worked on this a 
+  bit as well).
+
+
+  Created a working way to add events to a user's google calendar as well as a rudimentary way to view them in a, (although some of this 
+  seems to have been removed from google's javascript calendar api recently, and thus was not included in our final version.) Had some help
+  from Dave and Eric. 
