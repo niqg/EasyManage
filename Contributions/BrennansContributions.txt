@@ -1,7 +1,7 @@
 Design and prep:
   Helped with writing the Design document. 
 
-  Database Modeling/Programming/Implementation w/ Dave Yeager & Nicholas Giordano (partly should go down 
+  Database Modeling/Programming/Implementation w/ Dave Yeager & Nicholas Giordano (partly should go in below section)
 
   Came up with the idea to use states, which I believe Nate implemented in JS to fix some of our problems with what tab a user is in. 
 
