@@ -58,7 +58,7 @@ function tableClick(){
 					//console.log("status is " + statusOf);
 					//console.log("entry type = wrk order fired");
 					dateCompleted = $tds.eq(4).text();
-					description  = $tds.eq(5).text();
+					description  = $tds.eq(4).text();
 					//populateWorkOrdersModalData(entryID, title, date, statusOf, dateCompleted, description);
 					populateModifyEntryModal(entryID, title, "N/A", date, statusOf, dateCompleted,
                                                                 "N/A", description);
@@ -66,14 +66,14 @@ function tableClick(){
 					//console.log("entry type = prc order fired");
                                         statusOf = type = $tds.eq(3).text();
                                         purchaseCost = $tds.eq(4).text();
-                                        description  = $tds.eq(5).text();
+                                        description  = $tds.eq(4).text();
                                         populateModifyEntryModal(entryID, title, "N/A", date, statusOf, "N/A",
                                                                 purchaseCost, description);
 					//populatePurchaseOrdersModalData(entryID, title, date, status, purchaseCost, description);
 				} else if(state === "General Orders"){
-					//console.log("entry type = general");
+					console.log("entry type = general");
                                         description  = $tds.eq(3).text();
-                                        //console.log("this shouldt fire");
+                                        console.log("this shouldt fire");
 					// populateGeneralOrdersModalData(entryID, title, date, description);
 					populateModifyEntryModal(entryID, title, "N/A", date, "N/A", "N/A",
                                                                 "N/A", description);

@@ -9,7 +9,7 @@ function populateModifyEntryModal(entryIDInp, titleInp, typeInp, dateCreatedInp,
 	var dateCompleted = dateCompletedInp;
 	var cost = costInp;
 	var description = descriptionInp;
-	
+	console.log(descriptionInp + "asdf");
 	var panelBody = document.getElementById("modifyEntryModalBody");
 	panelBody.innerHTML = "";
 	var panelFooter = document.getElementById("modifyEntryModalFooter");	
@@ -17,8 +17,8 @@ function populateModifyEntryModal(entryIDInp, titleInp, typeInp, dateCreatedInp,
 	var entryIDDiv = document.createElement("div");
 	var entryIDDiv1 = document.createElement("div");
 	var entryIDLabel = document.createElement("label");
-	entryIDLabel.innerHTML = "Entry ID";
-	entryIDLabel.setAttribute("style", "visibility: hidden");
+	entryIDLabel.innerHTML = "You are now modifying an Entry";
+	//entryIDLabel.setAttribute("style", "visibility: hidden");
 	var entryIDInput = document.createElement("input");
 	entryIDInput.value = entryID;
 	entryIDInput.setAttribute("style", "visibility: hidden");
@@ -37,7 +37,7 @@ function populateModifyEntryModal(entryIDInp, titleInp, typeInp, dateCreatedInp,
 	var titleDiv = document.createElement("div");
 	var titleDiv1 = document.createElement("div");
 	var titleLabel = document.createElement("label");
-	titleLabel.innerHTML = "title";
+	titleLabel.innerHTML = "Title";
 	var titleInput = document.createElement("input");
 	titleInput.value = title;
 	//titleInput.disabled = true;
@@ -81,13 +81,13 @@ function populateModifyEntryModal(entryIDInp, titleInp, typeInp, dateCreatedInp,
 	var dateCompletedDiv = document.createElement("div");
 	var dateCompletedDiv1 = document.createElement("div");
 	var dateCompletedLabel = document.createElement("label");
-	dateCompletedLabel.innerHTML = "Date Completed";
+	dateCompletedLabel.innerHTML = "Date Completed Yadayada";
 	var dateCompletedInput = document.createElement("input");
 	dateCompletedInput.value = dateCompleted;
 	dateCompletedInput.disabled = true;
 	dateCompletedInput.id = "moddateCompletedInput";
-	dateCompletedDiv.appendChild(dateCompletedLabel);
-	dateCompletedDiv1.appendChild(dateCompletedInput);
+	//dateCompletedDiv.appendChild(dateCompletedLabel);
+	//dateCompletedDiv1.appendChild(dateCompletedInput);
 	
 	var costDiv = document.createElement("div");
 	var costDiv1 = document.createElement("div");
@@ -107,7 +107,7 @@ function populateModifyEntryModal(entryIDInp, titleInp, typeInp, dateCreatedInp,
 	var descriptionInput = document.createElement("textarea");
 	descriptionInput.rows = "3";
 	descriptionInput.setAttribute("style", "width: 500px");
-	descriptionInput.value = description;
+	descriptionInput.innerHTML = description;
 	//descriptionInput.disabled = true;
 	descriptionInput.id = "moddescriptionInput";
 	descriptionDiv.appendChild(descriptionLabel);
@@ -144,10 +144,10 @@ function populateModifyEntryModal(entryIDInp, titleInp, typeInp, dateCreatedInp,
 	panelBody.appendChild(statusDiv1);
 	}
 	
-	if(dateCompleted != "N/A"){
-	panelBody.appendChild(dateCompletedDiv);
-	panelBody.appendChild(dateCompletedDiv1);
-	}
+	//if(dateCompleted != "N/A"){
+	//panelBody.appendChild(dateCompletedDiv);
+	//panelBody.appendChild(dateCompletedDiv1);
+	//}
 	
 	//if(cost != "N/A"){
 	//panelBody.appendChild(costDiv);

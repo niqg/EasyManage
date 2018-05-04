@@ -27,10 +27,11 @@ function populateModifyContactModal(contactIdInp, typeInp){
 	var contactIdDiv = document.createElement("div");
     var contactIdDiv1 = document.createElement("div");
     var contactIdLabel = document.createElement("label");
-    contactIdLabel.innerHTML = "Contact Id";
+    contactIdLabel.innerHTML = "You are now modifying a Contact";
     var contactIdInput = document.createElement("input");
     contactIdInput.value = contactId;
     contactIdInput.disabled = true;
+    contactIdInput.setAttribute("style", "visibility: hidden");
     contactIdInput.id = "contactIdInputID";
     contactIdDiv.appendChild(contactIdLabel);
     contactIdDiv1.appendChild(contactIdInput);
