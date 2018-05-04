@@ -16,9 +16,12 @@ Bigger description text box for more robust descriptions.
 
 Google calendar widget added. 
 
-Current user logged in is tied to a user.
-Users have permissions. 
-Organization users are considered as admins with the max amount of permissions (and these can't be changed)
 
-You can only see data (entries, other users, etc) based on your organization now. 
-  Adding items makes them belong to whatever organization you are a part of. 
+I believe this was shown at the last demo, but just in case:
+
+    Current user logged in is tied to a user.
+    Users have permissions. 
+    Organization users are considered as admins with the max amount of permissions (and these can't be changed)
+
+    You can only see data (entries, other users, etc) based on your organization now. 
+      Adding items makes them belong to whatever organization you are a part of. 
