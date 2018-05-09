@@ -1,0 +1,3 @@
+Helped work on designing the database.
+Helped work on implementing the database.
+//More to be added by Niq
